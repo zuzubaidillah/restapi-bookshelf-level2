@@ -1,5 +1,7 @@
 <?php
-class Database {
+
+class Database
+{
     private $host = "localhost";
     private $db_name = "bookshelf";
     private $username = "root";
@@ -20,7 +22,8 @@ class Database {
 
         return $this->conn;
     }*/
-    public function __construct() {
+    public function __construct()
+    {
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->db_name;
 
         $option = [
@@ -31,17 +34,27 @@ class Database {
         try {
             $this->dbh = new PDO($dsn, $this->username, $this->password, $option);
         } catch (PDOException $e) {
-            die($e->getMessage());
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
         }
     }
+
     public function query($query)
     {
-        $this->stmt = $this->dbh->prepare($query);
+        try {
+            $this->stmt = $this->dbh->prepare($query);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
+        }
     }
+
     public function bind($param, $value, $type = null)
     {
-        if( is_null($type) ) {
-            switch( true ) {
+        if (is_null($type)) {
+            switch (true) {
                 case is_int($value) :
                     $type = PDO::PARAM_INT;
                     break;
@@ -58,31 +71,64 @@ class Database {
 
         $this->stmt->bindValue($param, $value, $type);
     }
-    public function execute() {
+
+    public function execute()
+    {
         try {
             $this->stmt->execute();
             return true;
         } catch (PDOException $e) {
-            throw new Exception($e->getMessage());
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
         }
     }
+
     public function lastInsertId()
     {
-        return $this->dbh->lastInsertId();
+        try {
+            return $this->dbh->lastInsertId();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
+        }
     }
+
     public function resultSet()
     {
-        $this->execute();
-        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $this->execute();
+            return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
+        }
     }
+
     public function single()
     {
-        $this->execute();
-        return $this->stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $this->execute();
+            return $this->stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
+        }
     }
+
     public function rowCount()
     {
-        return $this->stmt->rowCount();
+        try {
+            return $this->stmt->rowCount();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(["message" => $e->getMessage()]);
+            die();
+        }
     }
 }
+
 ?>

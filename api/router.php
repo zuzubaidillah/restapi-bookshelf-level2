@@ -66,8 +66,8 @@ class Router {
                     $controller->registrasi();
                 }
 
-                // GET api/auth/login
-                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'login' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+                // POST api/auth/login
+                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'login' && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $controller->login();
                 }
 

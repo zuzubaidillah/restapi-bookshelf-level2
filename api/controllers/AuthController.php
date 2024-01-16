@@ -12,18 +12,19 @@ class AuthController
     public function getByToken() {}
     public function registrasi() {
         // Menerima data JSON dari request
-        $inputData = json_decode(file_get_contents('php://input'), true);
+        $input_data = json_decode(file_get_contents('php://input'), true);
 
         // Validasi input
-        if (empty($inputData['name']) || empty($inputData['email']) || empty($inputData['password'])) {
-            echo json_encode(['message' => 'Data lengkap harus diisi']);
-            http_response_code(400); // Bad Request
+        if (empty($input_data['name']) || empty($input_data['email']) || empty($input_data['password'])) {
+            echo json_encode(['message' => 'Data tidak lengkap harus diisi']);
+            http_response_code(400);
             exit();
         }
 
+        $user = new User();
         // Cek duplikasi email
         $stmt = $db->prepare("SELECT id FROM user WHERE email = :email");
-        $stmt->execute(['email' => $inputData['email']]);
+        $stmt->execute(['email' => $input_data['email']]);
         if ($stmt->fetch()) {
             echo json_encode(['message' => 'Email sudah digunakan']);
             http_response_code(409); // Conflict
@@ -31,13 +32,13 @@ class AuthController
         }
 
         // Enkripsi password
-        $hashedPassword = password_hash($inputData['password'], PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($input_data['password'], PASSWORD_DEFAULT);
 
         // Menyimpan data ke database
         $stmt = $db->prepare("INSERT INTO user (name, email, password) VALUES (:name, :email, :password)");
         $result = $stmt->execute([
-            'name' => $inputData['name'],
-            'email' => $inputData['email'],
+            'name' => $input_data['name'],
+            'email' => $input_data['email'],
             'password' => $hashedPassword
         ]);
 

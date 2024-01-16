@@ -31,15 +31,21 @@ class Router {
                 // GET api/book
                 $controller->getBooks($queryParams);
             }
-        } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+        }
+        // GET api/book
+        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'POST') {
             include 'controllers/BookController.php';
             $controller = new BookController();
             $controller->createBook();
-        } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+        }
+        // GET api/book
+        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'PUT') {
             include 'controllers/BookController.php';
             $controller = new BookController();
             $controller->putBook($_FILES);
-        } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+        }
+        // GET api/book
+        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
             include 'controllers/BookController.php';
             $controller = new BookController();
             $controller->deleteBook($_FILES);
@@ -48,26 +54,33 @@ class Router {
 
 
         /**
-         * ROUTES USER
+         * ROUTES AUTH
          */
-        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'auth' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'auth') {
             include 'controllers/AuthController.php';
             $controller = new AuthController();
 
             if (isset($uriSegments[$nomorUrutSetelahAPI+1])) {
-                // GET api/auth/registrasi
-                if ($uriSegments[$nomorUrutSetelahAPI+1] == 'registrasi') {
+                // POST api/auth/registrasi
+                if ($uriSegments[$nomorUrutSetelahAPI+1] == 'registrasi' && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $controller->registrasi();
                 }
 
                 // GET api/auth/login
-                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'login') {
+                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'login' && $_SERVER['REQUEST_METHOD'] == 'GET') {
                     $controller->login();
                 }
 
                 // GET api/auth/current
-                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'current') {
+                elseif ($uriSegments[$nomorUrutSetelahAPI+1] == 'current' && $_SERVER['REQUEST_METHOD'] == 'GET') {
                     $controller->getByToken();
+                }
+
+                // GET api/auth/....
+                else {
+                    http_response_code(404);
+                    echo json_encode(["message"=>"routes tidak ditemukan"]);
+                    exit();
                 }
             } else {
                 // GET api/auth

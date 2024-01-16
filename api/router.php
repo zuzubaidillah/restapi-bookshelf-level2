@@ -28,15 +28,15 @@ class Router {
         } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'POST') {
             include 'controllers/BookController.php';
             $controller = new BookController();
-            $controller->createBook($_FILES); // Menangani upload file
+            $controller->createBook(); // Menangani upload file
         } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'PUT') {
             include 'controllers/BookController.php';
             $controller = new BookController();
-            $controller->createBook($_FILES); // Menangani upload file
+            $controller->putBook($_FILES); // Menangani upload file
         } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
             include 'controllers/BookController.php';
             $controller = new BookController();
-            $controller->createBook($_FILES); // Menangani upload file
+            $controller->deleteBook($_FILES); // Menangani upload file
         } else {
             echo json_encode(["message"=>"routes tidak ditemukan"]);
             exit();

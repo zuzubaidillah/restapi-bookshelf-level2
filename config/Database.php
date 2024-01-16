@@ -58,9 +58,17 @@ class Database {
 
         $this->stmt->bindValue($param, $value, $type);
     }
-    public function execute()
+    public function execute() {
+        try {
+            $this->stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+    public function lastInsertId()
     {
-        $this->stmt->execute();
+        return $this->dbh->lastInsertId();
     }
     public function resultSet()
     {

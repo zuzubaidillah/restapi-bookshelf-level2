@@ -30,6 +30,13 @@ class Book {
         return $this->db->resultSet();
     }
 
+    public function findId($book_id) {
+        $query = "SELECT id, title, year, author, isComplete, created_at, updated_at, deleted_at, creator_id, updator_id FROM " . $this->table_name . " WHERE id=:id and deleted_at IS NULL";
+        $this->db->query($query);
+        $this->db->bind('id', $book_id);
+        return $this->db->single();
+    }
+
 
     // Method lainnya (create, read_one, update, delete)
     // ...

@@ -14,9 +14,18 @@ class BookController {
         $this->sendJson($data);
     }
 
-    public function getBookById($bookId, $queryParams) {
+    public function getBookById($book_id, $queryParams) {
         // Logika untuk mengambil buku berdasarkan ID
-        $data = ['book' => 'Detail Buku']; // Data contoh
+        $book = new Book();
+        $data_book = $book->findId($book_id);
+        if (!$data_book) {
+            http_response_code(400);
+            $this->sendJson([
+                "message" => "Book id $book_id tidak ditemukan"
+            ]);
+           exit();
+        }
+        $data = ['data' => $data_book];
         $this->sendJson($data);
     }
 

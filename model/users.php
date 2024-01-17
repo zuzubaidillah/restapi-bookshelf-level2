@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . "/../config/Database.php";
 
-class User
+class Users
 {
-    private $table_name = "user";
+    private $table_name = "users";
     private $db;
 
     public $id;

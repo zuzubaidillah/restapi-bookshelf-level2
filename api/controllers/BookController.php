@@ -4,9 +4,11 @@ require_once __DIR__ . "/../../model/book.php";
 class BookController
 {
     private $book;
+    private $user;
 
-    public function __construct()
+    public function __construct($user_current)
     {
+        $this->user = $user_current;
     }
 
     public function getBooks($queryParams)

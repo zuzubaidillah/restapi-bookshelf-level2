@@ -44,11 +44,21 @@ class Book
         return $this->db->single();
     }
 
+    public function findTitleRelasiUser($book_title)
+    {
+        $query = "SELECT book.*, users.name as users_name FROM " . $this->table_name . " 
+        inner join users on book.creator_id=users.id
+        WHERE book.title=:title and book.deleted_at IS NULL";
+        $this->db->query($query);
+        $this->db->bind('title', $book_title);
+        return $this->db->single();
+    }
+
     public function save($form_data)
     {
         $id = mt_rand(1, 9999);
         // id pada table book pastikan auto_increment
-        $query = "INSERT INTO $this->table_name (id, title, year, author, isComplete, file, created_at) VALUES (:id, :title, :year, :author, :is_complete, :file, :created_at)";
+        $query = "INSERT INTO $this->table_name (id, title, year, author, isComplete, file, created_at, creator_id) VALUES (:id, :title, :year, :author, :is_complete, :file, :created_at, :creator_id)";
         $this->db->query($query);
         $this->db->bind('id', $id);
         $this->db->bind('title', $form_data['title']);
@@ -57,6 +67,7 @@ class Book
         $this->db->bind('is_complete', $form_data['is_complete']);
         $this->db->bind('file', $form_data['file']);
         $this->db->bind('created_at', $form_data['created_at']);
+        $this->db->bind('creator_id', $form_data['creator_id']);
 
         $res = $this->db->execute();
         if ($res) {

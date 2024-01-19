@@ -79,6 +79,27 @@ class BookController
             ], 400);
             exit();
         }
+
+        // cek title sama
+        $book = new Book();
+        $find_book = $book->findTitleRelasiUser($_POST['title']);
+        if ($find_book) {
+            $user_name = strtoupper($find_book['users_name']);
+            $this->sendJson([
+                "message" => "Judul buku sudah ada. di buat oleh pengguna $user_name",
+            ], 400);
+            exit();
+        }
+
+        
+        // Mengecek ukuran file
+        if (!$_FILES["file"]["size"] || $_FILES["file"]["size"] > (2 * 1024 * 1024)) {
+            $this->sendJson([
+                "message" => "Ukuran file terlalu besar. Maksimal 2MB."
+            ], 400);
+            exit();
+        }
+
         // Direktori tujuan untuk menyimpan file
         $targetDir = "uploads/";
         $fileName = basename($_FILES["file"]["name"]);
@@ -86,6 +107,17 @@ class BookController
         $fileType = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
         $fileName = uniqid() . '.' . $fileType;
         $targetFilePath = $targetDir . $fileName;
+
+        // Daftar ekstensi file yang diperbolehkan
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'pdf'];
+
+        // Mengecek tipe file
+        if (!in_array(strtolower($fileType), $allowedTypes)) {
+            $this->sendJson([
+                "message" => "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
+            ], 400);
+            exit();
+        }
 
         try {
             // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
@@ -107,12 +139,13 @@ class BookController
                     "is_complete" => $isComplete,
                     "file" => $file,
                     "created_at" => date("Y-m-d H:i:s"),
+                    "creator_id" => $this->user['id']
                 ];
                 $book = new Book();
                 $result = $book->save($form_data);
                 $data = ['data' => $result];
                 $this->sendJson($data, 201);
-            } else{
+            } else {
                 $data = ['message' => 'Maaf, terjadi kesalahan saat mengupload file.'];
                 $this->sendJson($data, 400);
             }

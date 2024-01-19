@@ -1,5 +1,5 @@
 <?php
-
+namespace Config;
 require_once __DIR__ . "/JWT/JWT.php";
 require_once __DIR__ . "/JWT/Key.php";
 require_once __DIR__ . "/JWT/ExpiredException.php";
@@ -42,7 +42,7 @@ class TokenJwt
             "iss" => $this->domain, // Penerbit
             "aud" => $this->domain, // Audience
             "iat" => time(), // Waktu di mana token diterbitkan
-            "exp" => time() + 5 * 60, //24 * 60 * 60, // Expire dalam 24 jam
+            "exp" => time() + 24*60 * 60, //24 * 60 * 60, // Expire dalam 24 jam
             "user_id" => $id // Menambahkan user_id ke payload
         ];
         return JWT::encode($payload, $this->key, 'HS256');

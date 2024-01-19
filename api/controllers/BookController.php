@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../../model/book.php";
-
+use Model\Book;
 class BookController
 {
     private $book;

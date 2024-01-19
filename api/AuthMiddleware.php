@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__."/../model/book.php";
+require_once __DIR__."/../model/users.php";
+require_once __DIR__."/../config/TokenJwt.php";
+use Config\{TokenJwt};
+use Model\{Users,Book};
 
 class AuthMiddleware
 {

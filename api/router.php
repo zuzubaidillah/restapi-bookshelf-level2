@@ -1,7 +1,6 @@
 <?php
 header("Content-type: application/json");
 require_once __DIR__ . "/AuthMiddleware.php";
-
 class Router
 {
     public function route()

@@ -18,3 +18,8 @@ yang mau ditambahkan bookshelf
 seperti biasa cara uploadnya lewat phpmyadmin
 database ada di folder db
 <li>bookshelf.sql</li>
+
+```text
+table book [id, title, year, author, created_at, updated_at, creator_id]
+table users [id, name]
+```

@@ -1,6 +1,8 @@
 <?php
 header("Content-type: application/json");
 require_once __DIR__ . "/AuthMiddleware.php";
+require_once __DIR__."/../config/helper.php";
+
 class Router
 {
     public function route()
@@ -25,41 +27,41 @@ class Router
          */
         if ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'GET') {
             // verifikasi token
-            $user_current = AuthMiddleware::authenticate();
+            AuthMiddleware::authenticate();
 
             include 'controllers/BookController.php';
-            $controller = new BookController($user_current);
+            $controller = new BookController();
 
+            // GET api/book/{{book_id}}
             if (isset($uriSegments[$nomorUrutSetelahAPI + 1])) {
-                // GET api/book/{{book_id}}
                 $controller->getBookById($uriSegments[$nomorUrutSetelahAPI + 1], $queryParams);
-            } else {
-                // GET api/book
+            } // GET api/book
+            else {
                 $controller->getBooks($queryParams);
             }
-        } // GET api/book
+        } // POST api/book
         elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'POST') {
             // verifikasi token
-            $user_current = AuthMiddleware::authenticate();
+            AuthMiddleware::authenticate();
 
             include 'controllers/BookController.php';
-            $controller = new BookController($user_current);
+            $controller = new BookController();
             $controller->createBook();
-        } // GET api/book
+        } // PUT api/book/{{book_id}}
         elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'PUT') {
             // verifikasi token
-            $user_current = AuthMiddleware::authenticate();
+            AuthMiddleware::authenticate();
 
             include 'controllers/BookController.php';
-            $controller = new BookController($user_current);
-            $controller->putBook($_FILES);
-        } // GET api/book
+            $controller = new BookController();
+            $controller->putBook($uriSegments[$nomorUrutSetelahAPI + 1]);
+        } // DELETE api/book
         elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
             // verifikasi token
-            $user_current = AuthMiddleware::authenticate();
+            AuthMiddleware::authenticate();
 
             include 'controllers/BookController.php';
-            $controller = new BookController($user_current);
+            $controller = new BookController();
             $controller->deleteBook($_FILES);
         } /**
          * ROUTES AUTH

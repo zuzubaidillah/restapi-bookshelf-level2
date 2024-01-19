@@ -6,9 +6,9 @@ class BookController
     private $book;
     private $user;
 
-    public function __construct($user_current)
+    public function __construct()
     {
-        $this->user = $user_current;
+        $this->user = null;
     }
 
     public function getBooks($queryParams)
@@ -22,9 +22,10 @@ class BookController
 
     public function getBookById($book_id, $queryParams)
     {
+        $user_id = (auth())->id;
         // Logika untuk mengambil buku berdasarkan ID
         $book = new Book();
-        $data_book = $book->findId($book_id);
+        $data_book = $book->findIdAndCreator($book_id, $user_id);
         if (!$data_book) {
             $this->sendJson([
                 "message" => "Book id $book_id tidak ditemukan"
@@ -60,8 +61,10 @@ class BookController
             }
         }
 
-        // Validasi 'isComplete'
+        // Validasi 'file'
         if (!isset($_FILES['file'])) {
+            $errors['file'] = 'File harus diisi.';
+        }else if ($_FILES['file']['name'] === "") {
             $errors['file'] = 'File harus diisi.';
         }
 
@@ -139,7 +142,7 @@ class BookController
                     "is_complete" => $isComplete,
                     "file" => $file,
                     "created_at" => date("Y-m-d H:i:s"),
-                    "creator_id" => $this->user['id']
+                    "creator_id" => (auth())->id
                 ];
                 $book = new Book();
                 $result = $book->save($form_data);
@@ -155,11 +158,11 @@ class BookController
         }
     }
 
-    public function putBook($fileData)
+    public function putBook($book_id)
     {
         // Logika untuk menangani upload file dan membuat buku baru
         // Proses $fileData
-        $data = ['message' => 'Buku berhasil diupdate'];
+        $data = ['message' => 'Buku berhasil diupdate book_id '.$book_id];
         $this->sendJson($data, 200);
     }
 

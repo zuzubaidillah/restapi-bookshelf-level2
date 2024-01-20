@@ -36,32 +36,32 @@ class BookController
         $this->sendJson($data, 200);
     }
 
-    private function validasi()
+    private function validasiCreate()
     {
         $errors = [];
-        // Validasi 'title'
+        // Validasi 'title' required
         if (empty($_POST['title'])) {
             $errors['title'] = 'Judul buku diperlukan.';
         }
 
-        // Validasi 'year'
+        // Validasi 'year' required
         if (empty($_POST['year']) || !is_numeric($_POST['year'])) {
             $errors['year'] = 'Tahun harus berupa angka.';
         }
 
-        // Validasi 'author'
+        // Validasi 'author' required
         if (empty($_POST['author'])) {
             $errors['author'] = 'Nama penulis diperlukan.';
         }
 
-        // Validasi 'isComplete'
+        // Validasi 'isComplete' required
         if (isset($_POST['isComplete'])) {
             if ($_POST['isComplete'] != '1' && $_POST['isComplete'] != '0') {
                 $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
             }
         }
 
-        // Validasi 'file'
+        // Validasi 'file' required
         if (!isset($_FILES['file'])) {
             $errors['file'] = 'File harus diisi.';
         }else if ($_FILES['file']['name'] === "") {
@@ -74,7 +74,7 @@ class BookController
     public function createBook()
     {
         // validasi request
-        $validasi = $this->validasi();
+        $validasi = $this->validasiCreate();
         if ($validasi) {
             $this->sendJson([
                 "errors" => $validasi,
@@ -158,8 +158,72 @@ class BookController
         }
     }
 
+    private function validasiPut()
+    {
+        $errors = [];
+        // Validasi 'title' required
+        if (empty($_POST['title'])) {
+            $errors['title'] = 'Judul buku diperlukan.';
+        }
+
+        // Validasi 'year' required
+        if (empty($_POST['year']) || !is_numeric($_POST['year'])) {
+            $errors['year'] = 'Tahun harus berupa angka.';
+        }
+
+        // Validasi 'author' required
+        if (empty($_POST['author'])) {
+            $errors['author'] = 'Nama penulis diperlukan.';
+        }
+
+        // Validasi 'isComplete' required
+        if (isset($_POST['isComplete'])) {
+            if ($_POST['isComplete'] != '1' && $_POST['isComplete'] != '0') {
+                $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
+            }
+        }
+
+        // Validasi 'file' optional
+        if (isset($_FILES['file']) && $_FILES['file']['name'] === "") {
+            $errors['file'] = 'File harus diisi.';
+        }
+        
+        var_dump($_FILES, $_POST);
+        exit();
+
+        return $errors;
+    }
+
     public function putBook($book_id)
     {
+        // validasi request
+        $validasi = $this->validasiPut();
+        if ($validasi) {
+            $this->sendJson([
+                "errors" => $validasi,
+                "error" => "request tidak lengkap"
+            ], 400);
+            exit();
+        }
+        // Logika untuk menangani upload file dan membuat buku baru
+        // Proses $fileData
+        $data = ['message' => 'Buku berhasil diupdate book_id '.$book_id];
+        $this->sendJson($data, 200);
+    }
+
+    public function updateFile($book_id)
+    {
+        var_dump($_FILES);
+        exit();
+        // validasi request
+        $validasi = "";
+        if ($validasi) {
+            $this->sendJson([
+                "errors" => $validasi,
+                "error" => "request tidak lengkap"
+            ], 400);
+            exit();
+        }
         // Logika untuk menangani upload file dan membuat buku baru
         // Proses $fileData
         $data = ['message' => 'Buku berhasil diupdate book_id '.$book_id];

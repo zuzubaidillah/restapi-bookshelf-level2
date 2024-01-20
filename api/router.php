@@ -1,7 +1,7 @@
 <?php
 header("Content-type: application/json");
 require_once __DIR__ . "/AuthMiddleware.php";
-require_once __DIR__."/../config/helper.php";
+require_once __DIR__ . "/../config/helper.php";
 
 class Router
 {
@@ -39,7 +39,21 @@ class Router
             else {
                 $controller->getBooks($queryParams);
             }
-        } // POST api/book
+        } elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book') {
+            //// verifikasi token
+            AuthMiddleware::authenticate();
+
+            include 'controllers/BookController.php';
+            $controller = new BookController();
+
+            // POST api/book/{{book_id}}/file
+            if (isset($uriSegments[$nomorUrutSetelahAPI + 2]) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+                $controller->updateFile($uriSegments[$nomorUrutSetelahAPI + 1]);
+            } // PUT api/book/{{book_id}}
+            else if (isset($uriSegments[$nomorUrutSetelahAPI + 2]) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+                $controller->putBook($uriSegments[$nomorUrutSetelahAPI + 1]);
+            }
+        }// POST api/book
         elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'POST') {
             // verifikasi token
             AuthMiddleware::authenticate();
@@ -47,15 +61,7 @@ class Router
             include 'controllers/BookController.php';
             $controller = new BookController();
             $controller->createBook();
-        } // PUT api/book/{{book_id}}
-        elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'PUT') {
-            // verifikasi token
-            AuthMiddleware::authenticate();
-
-            include 'controllers/BookController.php';
-            $controller = new BookController();
-            $controller->putBook($uriSegments[$nomorUrutSetelahAPI + 1]);
-        } // DELETE api/book
+        }  // DELETE api/book
         elseif ($uriSegments[$nomorUrutSetelahAPI] == 'book' && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
             // verifikasi token
             AuthMiddleware::authenticate();

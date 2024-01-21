@@ -37,10 +37,17 @@ class Route
             $route_pattern = "#^" . preg_replace('/{[a-zA-Z0-9_]+}/', '([a-zA-Z0-9_]+)', $route) . "$#";
             if (preg_match($route_pattern, $uri, $matches)) {
                 array_shift($matches); // Hapus full match, sisakan parameter saja
-                call_user_func_array($action, $matches);
+
+                if (is_callable($action)) {
+                    // Jika action adalah closure
+                    call_user_func_array($action, $matches);
+                } else if (is_string($action)) {
+                    // Jika action adalah string, misalnya 'Controller@method'
+                    [$controller, $method] = explode('@', $action);
+                    call_user_func_array([new $controller, $method], $matches);
+                }
+
                 return;
-            } else {
-                echo "Tidak cocok: $route_pattern dengan $uri\n"; // Baris debugging
             }
         }
 

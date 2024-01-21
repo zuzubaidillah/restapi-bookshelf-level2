@@ -11,6 +11,11 @@ class BookController
         $this->user = null;
     }
 
+    public function test(){
+        var_dump("BookController@test");
+        exit();
+    }
+    
     public function getBooks($queryParams)
     {
         // Logika untuk mengambil daftar buku

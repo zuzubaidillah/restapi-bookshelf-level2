@@ -120,6 +120,17 @@ class Book
             return false;
         }
     }
+
+    public function deleteById($book_id)
+    {
+        $query = "DELETE 
+        FROM " . $this->table_name . " 
+        WHERE id=:id";
+
+        $this->db->query($query);
+        $this->db->bind('id', $book_id);
+        return $this->db->execute();
+    }
 }
 
 ?>

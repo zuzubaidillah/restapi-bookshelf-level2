@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . "/../../model/book.php";
+
 use Model\Book;
+
 class BookController
 {
     private $book;
@@ -11,11 +13,12 @@ class BookController
         $this->user = null;
     }
 
-    public function test(){
+    public function test()
+    {
         var_dump("BookController@test");
         exit();
     }
-    
+
     public function getBooks($queryParams)
     {
         // Logika untuk mengambil daftar buku
@@ -69,7 +72,7 @@ class BookController
         // Validasi 'file' required
         if (!isset($_FILES['file'])) {
             $errors['file'] = 'File harus diisi.';
-        }else if ($_FILES['file']['name'] === "") {
+        } else if ($_FILES['file']['name'] === "") {
             $errors['file'] = 'File harus diisi.';
         }
 
@@ -99,7 +102,7 @@ class BookController
             exit();
         }
 
-        
+
         // Mengecek ukuran file
         if (!$_FILES["file"]["size"] || $_FILES["file"]["size"] > (2 * 1024 * 1024)) {
             $this->sendJson([
@@ -134,12 +137,12 @@ class BookController
             }
 
             // Upload file ke direktori tujuan
-            if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)){
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
                 $title = $_POST['title'];
                 $year = $_POST['year'];
                 $author = $_POST['author'];
                 $isComplete = isset($_POST['isComplete']) ? $_POST['isComplete'] : 0;
-                $file = $targetDir.$fileName;
+                $file = $targetDir . $fileName;
                 $form_data = [
                     "title" => $title,
                     "year" => $year,
@@ -192,7 +195,7 @@ class BookController
         if (isset($_FILES['file']) && $_FILES['file']['name'] === "") {
             $errors['file'] = 'File harus diisi.';
         }
-        
+
         var_dump($_FILES, $_POST);
         exit();
 
@@ -212,14 +215,12 @@ class BookController
         }
         // Logika untuk menangani upload file dan membuat buku baru
         // Proses $fileData
-        $data = ['message' => 'Buku berhasil diupdate book_id '.$book_id];
+        $data = ['message' => 'Buku berhasil diupdate book_id ' . $book_id];
         $this->sendJson($data, 200);
     }
 
     public function updateFile($book_id)
     {
-        var_dump($_FILES, $book_id);
-        exit();
         // validasi request
         $validasi = "";
         if ($validasi) {
@@ -231,16 +232,41 @@ class BookController
         }
         // Logika untuk menangani upload file dan membuat buku baru
         // Proses $fileData
-        $data = ['message' => 'Buku berhasil diupdate book_id '.$book_id];
+        $data = ['message' => 'Buku berhasil diupdate book_id ' . $book_id];
         $this->sendJson($data, 200);
     }
 
-    public function deleteBook($fileData)
+    public function deleteBook($book_id)
     {
-        // Logika untuk menangani upload file dan membuat buku baru
-        // Proses $fileData
-        $data = ['message' => 'Buku berhasil dihapus'];
-        $this->sendJson($data, 200);
+        // memvalidasi parameter $book_id
+        if (!$book_id) {
+            $this->sendJson([
+                "message" => "request tidak lengkap"
+            ], 200);
+            exit();
+        }
+
+        $model_book = new Book();
+
+        // validasi $book_id dengan data di table book
+        $book = $model_book->findId($book_id);
+        if ($book === false) {
+            $this->sendJson([
+                "message" => "Book id $book_id tidak ditemukan"
+            ], 200);
+            exit();
+        }
+
+        // proses hapus data secara permanen
+        $book = $model_book->deleteById($book_id);
+        if ($book === true) {
+            $data = ['message' => 'Buku berhasil dihapus '];
+            $code = 200;
+        } else {
+            $data = ['message' => 'Buku berhasil dihapus '];
+            $code = 400;
+        }
+        $this->sendJson($data, $code);
     }
 
 

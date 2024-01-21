@@ -15,10 +15,10 @@ class UserController
     public function getUserById() {}
     public function postUser() {
         // Menerima data JSON dari request
-        $inputData = json_decode(file_get_contents('php://input'), true);
+        $request = json_decode(file_get_contents('php://input'), true);
 
         // Validasi input
-        if (empty($inputData['name']) || empty($inputData['email']) || empty($inputData['password'])) {
+        if (empty($request['name']) || empty($request['email']) || empty($request['password'])) {
             echo json_encode(['message' => 'Data lengkap harus diisi']);
             http_response_code(400); // Bad Request
             exit();
@@ -27,7 +27,7 @@ class UserController
         // Cek duplikasi email
 
         // Enkripsi password
-        $hashedPassword = password_hash($inputData['password'], PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($request['password'], PASSWORD_DEFAULT);
 
         // Menyimpan data ke database
 

@@ -1,6 +1,7 @@
 <?php
 namespace Model;
 require_once __DIR__ . "/../config/Database.php";
+
 use Config\{Database};
 
 class Book
@@ -83,20 +84,36 @@ class Book
         return $this->db->single();
     }
 
-    public function findTitleRelasiUser($book_title)
+    public function findByTitleRelasiUsers($book_title)
     {
-        $query = "SELECT book.*, users.name as users_name FROM " . $this->table_name . " 
-        inner join users on book.creator_id=users.id
+        $query = "SELECT book.*, users.name as users_name 
+        FROM book
+        inner join users
         WHERE book.title=:title and book.deleted_at IS NULL";
         $this->db->query($query);
         $this->db->bind('title', $book_title);
         return $this->db->single();
     }
 
+    public function findByTitleAndIdRelasiUsers($book_id, $book_title)
+    {
+        $query = "SELECT book.*, users.name as users_name 
+        FROM book
+        inner join users
+        WHERE book.title=:title
+          and book.id!=:id
+          and book.deleted_at IS NULL";
+        $this->db->query($query);
+        $this->db->bind('id', $book_id);
+        $this->db->bind('title', $book_title);
+        return $this->db->single();
+    }
+
     public function save($form_data)
     {
+        // id pada table book pastikan tidak auto_increment
+        // karena id dibuat oleh sisi PHP
         $id = mt_rand(1, 9999);
-        // id pada table book pastikan auto_increment
         $query = "INSERT INTO $this->table_name 
         (id, title, year, author, isComplete, file, created_at, creator_id) 
         VALUES (:id, :title, :year, :author, :is_complete, :file, :created_at, :creator_id)";
@@ -109,6 +126,61 @@ class Book
         $this->db->bind('file', $form_data['file']);
         $this->db->bind('created_at', $form_data['created_at']);
         $this->db->bind('creator_id', $form_data['creator_id']);
+
+        $res = $this->db->execute();
+        if ($res) {
+            // Mengambil data yang baru disimpan
+            $this->db->query("SELECT * FROM $this->table_name WHERE id = :id");
+            $this->db->bind('id', $id);
+            return $this->db->single();
+        } else {
+            return false;
+        }
+    }
+
+    public function update($id, $user_id, $form_data)
+    {
+        $query = "UPDATE book SET title=:title, year=:year, author=:author, updated_at=:updated_at, updator_id=:updator_id ";
+        // berhubung request isComplete adalah opsional
+        // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
+        if (isset($form_data['isComplete'])) {
+            $query .= ", isComplete=:isComplete "; // Tambahkan spasi sebelum klausa is_complete
+        }
+        $query .= " WHERE id=:id"; // Tambahkan spasi sebelum klausa WHERE
+        $this->db->query($query);
+        $this->db->bind('id', (int)$id);
+        $this->db->bind('title', (string)$form_data['title']);
+        $this->db->bind('year', (int)$form_data['year']);
+        $this->db->bind('author', (string)$form_data['author']);
+        if (isset($form_data['isComplete'])) {
+            $this->db->bind('isComplete', (int)$form_data['isComplete']);
+        }
+        $tanggal_sekarang = date("Y-m-d H:i:s");
+        $this->db->bind('updated_at', $tanggal_sekarang);
+        $this->db->bind('updator_id', (int)$user_id);
+
+        $res = $this->db->execute();
+        if ($res === true) {
+            // Mengambil data yang baru disimpan
+            return $this->findId($id);
+        } else {
+            return false;
+        }
+
+    }
+
+    public function updateFile($id, $file)
+    {
+        $query = "UPDATE book SET file=:file";
+        // berhubung request isComplete adalah opsional
+        // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
+        if (isset($form_data['is_complete'])) {
+            $query .= ",isComplete=:isComplete";
+        }
+        $query .= "WHERE id=:id";
+        $this->db->query($query);
+        $this->db->bind('id', $id);
+        $this->db->bind('file', $file);
 
         $res = $this->db->execute();
         if ($res) {

@@ -13,10 +13,10 @@ class AuthController
     }
     public function login() {
         // Menerima data JSON dari request
-        $input_data = json_decode(file_get_contents('php://input'), true);
+        $request = json_decode(file_get_contents('php://input'), true);
 
         // Validasi input
-        if (empty($input_data['email']) || empty($input_data['password'])) {
+        if (empty($request['email']) || empty($request['password'])) {
             echo json_encode(['message' => 'Data tidak lengkap harus diisi']);
             http_response_code(400);
             exit();
@@ -24,14 +24,14 @@ class AuthController
 
         $user = new Users();
         // validasi email yang SAMA
-        $validasi_email = $user->findEmail($input_data['email']);
+        $validasi_email = $user->findEmail($request['email']);
         if (!($validasi_email)) {
             echo json_encode(['message' => 'login gagal, cek email dan password']);
             http_response_code(400); // Conflict
             exit();
         }
         // Verifikasi password
-        if (password_verify($input_data['password'], $validasi_email['password'])) {
+        if (password_verify($request['password'], $validasi_email['password'])) {
             // Password cocok, buat token auth (misalnya JWT atau token sederhana)
 
             $handlerToken = new TokenJwt();
@@ -85,10 +85,10 @@ class AuthController
 
     public function registrasi() {
         // Menerima data JSON dari request
-        $input_data = json_decode(file_get_contents('php://input'), true);
+        $request = json_decode(file_get_contents('php://input'), true);
 
         // Validasi input
-        if (empty($input_data['name']) || empty($input_data['email']) || empty($input_data['password'])) {
+        if (empty($request['name']) || empty($request['email']) || empty($request['password'])) {
             echo json_encode(['message' => 'Data tidak lengkap harus diisi']);
             http_response_code(400);
             exit();
@@ -96,7 +96,7 @@ class AuthController
 
         $user = new Users();
         // validasi email yang SAMA
-        $validasi_email = $user->findEmail($input_data['email']);
+        $validasi_email = $user->findEmail($request['email']);
         if (is_array($validasi_email)) {
             echo json_encode(['message' => 'Email sudah digunakan']);
             http_response_code(409); // Conflict
@@ -104,10 +104,10 @@ class AuthController
         }
 
         // Enkripsi password
-        $hashedPassword = password_hash($input_data['password'], PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($request['password'], PASSWORD_DEFAULT);
         $form_data = [
-            'name' => $input_data['name'],
-            'email' => $input_data['email'],
+            'name' => $request['name'],
+            'email' => $request['email'],
             'password' => $hashedPassword
         ];
 

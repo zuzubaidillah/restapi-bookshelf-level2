@@ -86,14 +86,15 @@ class BookController
         if ($validasi) {
             $this->sendJson([
                 "errors" => $validasi,
-                "error" => "request tidak lengkap"
+                "error" => "request tidak lengkap",
+                "message" => "request tidak lengkap"
             ], 400);
             exit();
         }
 
         // cek title sama
         $book = new Book();
-        $find_book = $book->findTitleRelasiUser($_POST['title']);
+        $find_book = $book->findByTitleRelasiUsers($_POST['title']);
         if ($find_book) {
             $user_name = strtoupper($find_book['users_name']);
             $this->sendJson([
@@ -101,7 +102,6 @@ class BookController
             ], 400);
             exit();
         }
-
 
         // Mengecek ukuran file
         if (!$_FILES["file"]["size"] || $_FILES["file"]["size"] > (2 * 1024 * 1024)) {
@@ -142,13 +142,12 @@ class BookController
                 $year = $_POST['year'];
                 $author = $_POST['author'];
                 $isComplete = isset($_POST['isComplete']) ? $_POST['isComplete'] : 0;
-                $file = $targetDir . $fileName;
                 $form_data = [
                     "title" => $title,
                     "year" => $year,
                     "author" => $author,
                     "is_complete" => $isComplete,
-                    "file" => $file,
+                    "file" => $targetFilePath,
                     "created_at" => date("Y-m-d H:i:s"),
                     "creator_id" => (auth())->id
                 ];
@@ -166,75 +165,176 @@ class BookController
         }
     }
 
-    private function validasiPut()
+    private function validasiPut($request)
     {
+        /**
+        title: required,
+        year: required,
+        author: required,
+        isComplete: optional
+         */
+
         $errors = [];
         // Validasi 'title' required
-        if (empty($_POST['title'])) {
+        if (empty($request['title'])) {
             $errors['title'] = 'Judul buku diperlukan.';
         }
 
         // Validasi 'year' required
-        if (empty($_POST['year']) || !is_numeric($_POST['year'])) {
+        if (empty($request['year']) || !is_numeric($request['year'])) {
             $errors['year'] = 'Tahun harus berupa angka.';
         }
 
         // Validasi 'author' required
-        if (empty($_POST['author'])) {
+        if (empty($request['author'])) {
             $errors['author'] = 'Nama penulis diperlukan.';
         }
 
         // Validasi 'isComplete' required
-        if (isset($_POST['isComplete'])) {
-            if ($_POST['isComplete'] != '1' && $_POST['isComplete'] != '0') {
+        if (isset($request['isComplete'])) {
+            if ($request['isComplete'] != '1' && $request['isComplete'] != '0') {
                 $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
             }
         }
-
-        // Validasi 'file' optional
-        if (isset($_FILES['file']) && $_FILES['file']['name'] === "") {
-            $errors['file'] = 'File harus diisi.';
-        }
-
-        var_dump($_FILES, $_POST);
-        exit();
 
         return $errors;
     }
 
     public function putBook($book_id)
     {
+        $request = json_decode(file_get_contents('php://input'), true);
+
         // validasi request
-        $validasi = $this->validasiPut();
+        $validasi = $this->validasiPut($request);
         if ($validasi) {
             $this->sendJson([
                 "errors" => $validasi,
-                "error" => "request tidak lengkap"
+                "error" => "request tidak lengkap",
+                "message" => "request tidak lengkap"
             ], 400);
             exit();
         }
-        // Logika untuk menangani upload file dan membuat buku baru
-        // Proses $fileData
-        $data = ['message' => 'Buku berhasil diupdate book_id ' . $book_id];
-        $this->sendJson($data, 200);
+
+        // memanggil object Book (model dari table book)
+        $model_book = new Book();
+
+        // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
+        $find_book_id = $model_book->findId($book_id);
+        if (!$find_book_id) {
+            $this->sendJson([
+                "message" => "Buku id $book_id tidak ditemukan",
+            ], 400);
+            exit();
+        }
+
+        // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
+        $find_book = $model_book->findByTitleAndIdRelasiUsers($book_id, $request['title']);
+        if ($find_book) {
+            $user_name = strtoupper($find_book['users_name']);
+            $this->sendJson([
+                "message" => "Judul buku sudah ada. di buat oleh pengguna $user_name",
+            ], 400);
+            exit();
+        }
+
+        $user_id = (auth())->id;
+        $form_data = [
+            "title" => $request['title'],
+            "year" => $request['year'],
+            "author" => $request['author'],
+            "isComplete" => $request['isComplete'] ?? null // tanda ?? adalah null koalising jika $request['isComplete'] bernilai Undefined maka akan dialihkan ke nilai sebelah kanan yaitu null
+        ];
+
+        if (!isset($request['isComplete'])) {
+            unset($form_data['isComplete']);
+        }
+
+        // proses update book
+        $book = $model_book->update($book_id, $user_id, $form_data);
+        if ($book) {
+            $data = [
+                'message' => 'Buku berhasil diubah',
+                "data" => $book
+            ];
+            $code = 200;
+        } else {
+            $data = ['message' => 'Buku Gagal diubah'];
+            $code = 500;
+        }
+
+        $this->sendJson($data, $code);
     }
 
     public function updateFile($book_id)
     {
-        // validasi request
-        $validasi = "";
-        if ($validasi) {
+        // Validasi 'file' optional
+        if (!isset($_FILES['file']) || $_FILES['file']['name'] === "") {
+            $errors['file'] = 'File harus diisi.';
             $this->sendJson([
-                "errors" => $validasi,
-                "error" => "request tidak lengkap"
+                "errors" => $errors,
+                "error" => "request tidak lengkap",
+                "message" => "request tidak lengkap"
             ], 400);
             exit();
         }
-        // Logika untuk menangani upload file dan membuat buku baru
-        // Proses $fileData
-        $data = ['message' => 'Buku berhasil diupdate book_id ' . $book_id];
-        $this->sendJson($data, 200);
+
+        // memanggil object Book (model dari table book)
+        $model_book = new Book();
+
+        // mengambil data by id
+        $find_book_id = $model_book->findId($book_id);
+        if (!$find_book_id) {
+            $this->sendJson([
+                "message" => "Buku id $book_id tidak ditemukan",
+            ], 400);
+            exit();
+        }
+
+        // Hapus file lama jika ada
+        $oldFilePath = $find_book_id['file'];
+        if (file_exists($oldFilePath)) {
+            unlink($oldFilePath);
+        }
+
+        $targetDir = "uploads/";
+        $fileName = basename($_FILES["file"]["name"]);
+        // Menghasilkan nama file unik
+        $fileType = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
+        $fileName = uniqid() . '.' . $fileType;
+        $targetFilePath = $targetDir . $fileName;
+
+        // Daftar ekstensi file yang diperbolehkan
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'pdf'];
+
+        // Mengecek tipe file
+        if (!in_array(strtolower($fileType), $allowedTypes)) {
+            $this->sendJson([
+                "message" => "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
+            ], 400);
+            exit();
+        }
+        try {
+            // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
+            if (!file_exists($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+
+            // Upload file ke direktori tujuan
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
+                $book = new Book();
+                $result = $book->updateFile($book_id, $targetFilePath);
+                $data = ['data' => $result];
+                $this->sendJson($data, 200);
+            } else {
+                $data = ['message' => 'Maaf, terjadi kesalahan saat mengupload file.'];
+                $this->sendJson($data, 400);
+            }
+        } catch (Exception $e) {
+            $data = ['message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+            $this->sendJson($data, 500); // 500 Internal Server Error
+        }
     }
+
 
     public function deleteBook($book_id)
     {
@@ -252,7 +352,7 @@ class BookController
         $book = $model_book->findId($book_id);
         if ($book === false) {
             $this->sendJson([
-                "message" => "Book id $book_id tidak ditemukan"
+                "message" => "Buku id $book_id tidak ditemukan"
             ], 200);
             exit();
         }
@@ -263,8 +363,8 @@ class BookController
             $data = ['message' => 'Buku berhasil dihapus '];
             $code = 200;
         } else {
-            $data = ['message' => 'Buku berhasil dihapus '];
-            $code = 400;
+            $data = ['message' => 'Buku Gagal dihapus '];
+            $code = 500;
         }
         $this->sendJson($data, $code);
     }

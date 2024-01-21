@@ -61,15 +61,6 @@ Route::post($base_url . '/api/book', function () {
     $controller->createBook();
 });
 
-Route::post($base_url . '/api/book/{book_id}/file', function ($id) {
-    // verifikasi token
-    AuthMiddleware::authenticate();
-
-    require_once __DIR__ . "/api/controllers/BookController.php";
-    $controller = new BookController();
-    $controller->updateFile($id);
-});
-
 Route::put($base_url . '/api/book/{book_id}', function ($id) {
     // verifikasi token
     AuthMiddleware::authenticate();
@@ -77,6 +68,15 @@ Route::put($base_url . '/api/book/{book_id}', function ($id) {
     require_once __DIR__ . "/api/controllers/BookController.php";
     $controller = new BookController();
     $controller->putBook($id);
+});
+
+Route::post($base_url . '/api/book/{book_id}/file', function ($id) {
+    // verifikasi token
+    AuthMiddleware::authenticate();
+
+    require_once __DIR__ . "/api/controllers/BookController.php";
+    $controller = new BookController();
+    $controller->updateFile($id);
 });
 
 Route::delete($base_url . '/api/book/{book_id}', function ($id) {

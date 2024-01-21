@@ -169,6 +169,28 @@ class Book
 
     }
 
+    public function updateIsComplete($id, $user_id, $isComplete)
+    {
+        // berhubung request isComplete required
+        // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
+        $query = "UPDATE book SET isComplete=:isComplete, updated_at=:updated_at, updator_id=:updator_id WHERE id=:id";
+        $this->db->query($query);
+        $this->db->bind('id', $id);
+        $this->db->bind('isComplete', $isComplete);
+        $tanggal_sekarang = date("Y-m-d H:i:s");
+        $this->db->bind('updated_at', $tanggal_sekarang);
+        $this->db->bind('updator_id', $user_id);
+
+        $res = $this->db->execute();
+        if ($res === true) {
+            // Mengambil data yang baru disimpan
+            return $this->findId($id);
+        } else {
+            return false;
+        }
+
+    }
+
     public function updateFile($id, $file)
     {
         $query = "UPDATE book SET file=:file";

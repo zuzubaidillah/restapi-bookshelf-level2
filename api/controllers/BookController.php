@@ -168,10 +168,9 @@ class BookController
     private function validasiPut($request)
     {
         /**
-        title: required,
-        year: required,
-        author: required,
-        isComplete: optional
+         * title: required,
+         * year: required,
+         * author: required,
          */
 
         $errors = [];
@@ -188,13 +187,6 @@ class BookController
         // Validasi 'author' required
         if (empty($request['author'])) {
             $errors['author'] = 'Nama penulis diperlukan.';
-        }
-
-        // Validasi 'isComplete' required
-        if (isset($request['isComplete'])) {
-            if ($request['isComplete'] != '1' && $request['isComplete'] != '0') {
-                $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
-            }
         }
 
         return $errors;
@@ -242,18 +234,62 @@ class BookController
             "title" => $request['title'],
             "year" => $request['year'],
             "author" => $request['author'],
-            "isComplete" => $request['isComplete'] ?? null // tanda ?? adalah null koalising jika $request['isComplete'] bernilai Undefined maka akan dialihkan ke nilai sebelah kanan yaitu null
         ];
-
-        if (!isset($request['isComplete'])) {
-            unset($form_data['isComplete']);
-        }
 
         // proses update book
         $book = $model_book->update($book_id, $user_id, $form_data);
         if ($book) {
             $data = [
                 'message' => 'Buku berhasil diubah',
+                "data" => $book
+            ];
+            $code = 200;
+        } else {
+            $data = ['message' => 'Buku Gagal diubah'];
+            $code = 500;
+        }
+
+        $this->sendJson($data, $code);
+    }
+
+    public function putIsCompleteBook($book_id)
+    {
+        $request = json_decode(file_get_contents('php://input'), true);
+
+        $errors = [];
+        // Validasi 'isComplete' required
+        if (!isset($request['isComplete']) && empty($request['isComplete'])) {
+            $errors['isComplete'] = 'komplete membaca diperlukan.';
+        }
+        if ($errors) {
+            $this->sendJson([
+                "errors" => $errors,
+                "error" => "request tidak lengkap",
+                "message" => "request tidak lengkap"
+            ], 400);
+            exit();
+        }
+
+        // memanggil object Book (model dari table book)
+        $model_book = new Book();
+
+        // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
+        $find_book_id = $model_book->findId($book_id);
+        if (!$find_book_id) {
+            $this->sendJson([
+                "message" => "Buku id $book_id tidak ditemukan",
+            ], 400);
+            exit();
+        }
+
+        $user_id = (auth())->id;
+        $isComplete = $request['isComplete'];
+
+        // proses update book
+        $book = $model_book->updateIsComplete($book_id, $user_id, $isComplete);
+        if ($book) {
+            $data = [
+                'message' => $request['isComplete'] ? 'Buku telah komplete dibaca' : 'Buku diubah ke belum dibaca',
                 "data" => $book
             ];
             $code = 200;

@@ -1,27 +1,34 @@
 <?php
+
+namespace Config;
 header("Content-type: application/json");
 
 class Route
 {
     private static $routes = [];
 
-    public static function get($uri, $action) {
+    public static function get($uri, $action)
+    {
         self::$routes['GET'][$uri] = $action;
     }
 
-    public static function post($uri, $action) {
+    public static function post($uri, $action)
+    {
         self::$routes['POST'][$uri] = $action;
     }
 
-    public static function put($uri, $action) {
+    public static function put($uri, $action)
+    {
         self::$routes['PUT'][$uri] = $action;
     }
 
-    public static function delete($uri, $action) {
+    public static function delete($uri, $action)
+    {
         self::$routes['DELETE'][$uri] = $action;
     }
 
-    public static function run() {
+    public static function run()
+    {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 

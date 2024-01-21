@@ -53,6 +53,7 @@ class Route
 
         // Handle not found
         header("HTTP/1.0 404 Not Found");
-        echo '404 Not Found';
+        http_response_code(400);
+        echo json_encode(["message" => "404 Not Found - Metode $method tidak didukung"]);
     }
 }

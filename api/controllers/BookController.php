@@ -25,7 +25,7 @@ class BookController
         $this->sendJson($data, 200);
     }
 
-    public function getBookById($book_id, $queryParams)
+    public function getBookById($book_id)
     {
         $user_id = (auth())->id;
         // Logika untuk mengambil buku berdasarkan ID
@@ -218,7 +218,7 @@ class BookController
 
     public function updateFile($book_id)
     {
-        var_dump($_FILES);
+        var_dump($_FILES, $book_id);
         exit();
         // validasi request
         $validasi = "";

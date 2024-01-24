@@ -27,18 +27,33 @@ class Book
     }
 
     // Method untuk membaca data buku
-    public function read()
+    public function read($user_id, $status)
     {
+        $whereQuery = "";
+        if ($status != 'all') {
+            $whereQuery = "AND book.isComplete=:isComplete";
+        }
+        if (isset($_GET['q'])) {
+            $whereQuery .= " AND book.title LIKE :title";
+        }
         // Query untuk memilih semua kolom dari tabel book
         $query = "SELECT 
             book.id, book.title, book.year, book.author, book.isComplete, book.file, book.created_at, book.updated_at, book.deleted_at, book.creator_id, book.updator_id,
             users.name as creator_name
         FROM book
         INNER JOIN users on book.creator_id=users.id
-        WHERE book.deleted_at IS NULL";
+        WHERE book.deleted_at IS NULL and book.creator_id=:creator_id $whereQuery";
 
         // Mempersiapkan statement query
         $this->db->query($query);
+        $this->db->bind('creator_id', $user_id);
+        if ($status != 'all') {
+            $value = $status === 'sudah' ? 1 : 0;
+            $this->db->bind('isComplete', $value);
+        }
+        if (isset($_GET['q'])) {
+            $this->db->bind('title', "%".htmlspecialchars($_GET['q'], ENT_QUOTES)."%");
+        }
         return $this->db->resultSet();
     }
 
@@ -193,13 +208,7 @@ class Book
 
     public function updateFile($id, $file)
     {
-        $query = "UPDATE book SET file=:file";
-        // berhubung request isComplete adalah opsional
-        // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
-        if (isset($form_data['is_complete'])) {
-            $query .= ",isComplete=:isComplete";
-        }
-        $query .= "WHERE id=:id";
+        $query = "UPDATE book SET file=:file WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', $id);
         $this->db->bind('file', $file);

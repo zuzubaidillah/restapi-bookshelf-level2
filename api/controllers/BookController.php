@@ -13,18 +13,31 @@ class BookController
         $this->user = null;
     }
 
-    public function test()
+    public function getBooks()
     {
-        var_dump("BookController@test");
-        exit();
-    }
+        $status = "";
 
-    public function getBooks($queryParams)
-    {
-        // Logika untuk mengambil daftar buku
+        // Pengecekan apakah status diatur dalam URL
+        if (isset($_GET['status'])) {
+            // Pengecekan nilai status
+            $status_param = $_GET['status'];
+
+            // Hanya set status jika nilainya adalah all, belum, atau sudah
+            if ($status_param === 'all' || $status_param === 'belum' || $status_param === 'sudah') {
+                $status = $status_param;
+            } else {
+                $this->sendJson([
+                    'message' => 'parmas status tidak sesuai. harus (all,belum,sudah)'
+                ], 400);
+                exit();
+            }
+        }
+
+        $user_id = (auth())->id;
+
         $book = new Book();
-        $dataBook = $book->read();
-        $data = ['books' => $dataBook];
+        $dataBook = $book->read($user_id, $status);
+        $data = ['data' => $dataBook];
         $this->sendJson($data, 200);
     }
 

@@ -7,6 +7,23 @@ use Config\Route;
 
 $base_url = "/smkti/restApi-bookshelf-level2";
 
+Route::get($base_url . '/api/mock/{code}', function ($code) {
+    http_response_code((int)$code);
+    echo json_encode(['message'=>'mock-api']);
+});
+Route::post($base_url . '/api/mock/{code}', function ($code) {
+    http_response_code(400);
+    echo json_encode(['message'=>'mock-api']);
+});
+Route::put($base_url . '/api/mock/{code}', function ($code) {
+    http_response_code((int)$code);
+    echo json_encode(['message'=>'mock-api']);
+});
+Route::delete($base_url . '/api/mock/{code}', function ($code) {
+    http_response_code((int)$code);
+    echo json_encode(['message'=>'mock-api']);
+});
+
 /**
  * ROUTES AUTH
  */
@@ -38,7 +55,7 @@ Route::get($base_url . '/api/book', function () {
 
     require_once __DIR__ . "/controllers/BookController.php";
     $controller = new BookController();
-    $controller->getBooks("");
+    $controller->getBooks();
 });
 
 Route::get($base_url . '/api/book/{book_id}', function ($id) {

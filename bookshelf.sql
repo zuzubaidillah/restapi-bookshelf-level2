@@ -42,6 +42,20 @@ CREATE TABLE `book` (
   `creator_id` int DEFAULT NULL,
   `updator_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+ `id`       INT AUTO_INCREMENT PRIMARY KEY,
+ `name`     VARCHAR(100) NOT NULL,
+ `email`    VARCHAR(255) NOT NULL UNIQUE,
+ `password` VARCHAR(255) NOT NULL,
+ `file`     VARCHAR(255) NULL,
+ `created_at`  datetime not null,
+ `updated_at` datetime null,
+ `deleted_at` datetime null
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

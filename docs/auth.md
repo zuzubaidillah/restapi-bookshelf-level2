@@ -143,7 +143,7 @@ Response Body Error(400):
 {
     "message": "Akses ditolak. Token tidak ditemukan."
 }
-```w
+```
 
 ```json
 {

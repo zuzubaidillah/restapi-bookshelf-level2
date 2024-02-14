@@ -5,7 +5,7 @@ require_once __DIR__ . "/../config/helper.php";
 
 use Config\Route;
 
-$base_url = "/smkti/restApi-bookshelf-level2";
+$base_url = "/smkti/FIX-restApi-bookshelf-level2";
 
 Route::get($base_url . '/api/mock/{code}', function ($code) {
     http_response_code((int)$code);

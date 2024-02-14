@@ -51,6 +51,7 @@ class AuthController
             exit();
         }
     }
+    
     private function unauthorize() {
         echo json_encode(['message' => 'Akses ditolak. Token tidak ditemukan.']);
         http_response_code(401); // Unauthorized

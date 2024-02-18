@@ -6,6 +6,9 @@
 
 Endpoint :  GET /smkti/restApi-bookshelf-level2/api/book
 
+Headers :
+- Authorization : Bearer {{token}}
+
 Request Body : GET 
 
 ```json
@@ -40,6 +43,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 ### BOOK-menambahkan data
 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
+
+Headers :
+- Authorization : Bearer {{token}}
 
 Request Body : POST
 
@@ -116,6 +122,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 
 Endpoint :  GET /smkti/restApi-bookshelf-level2/api/book{{book_id}}
 
+Headers :
+- Authorization : Bearer {{token}}
+
 Request Body : GET
 
 Response Body Success(200) : ketika request body sesuai
@@ -181,6 +190,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 ### BOOK-ubah data
 
 Endpoint :  PUT /smkti/restApi-bookshelf-level2/api/book/{{book_id}}
+
+Headers :
+- Authorization : Bearer {{token}}
 
 Request Body : PUT
 
@@ -288,6 +300,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 
 Endpoint :  PUT /smkti/restApi-bookshelf-level2/api/book/{{book_id}}/read-book
 
+Headers :
+- Authorization : Bearer {{token}}
+
 Request Body :
 
 ```json
@@ -382,6 +397,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book/{{book_id}}/file
 
+Headers :
+- Authorization : Bearer {{token}}
+
 Request Body : POST
 
 ```json
@@ -473,6 +491,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 ### BOOK-hapus data dan file
 
 Endpoint :  DELETE /smkti/restApi-bookshelf-level2/api/book/{{book_id}}
+
+Headers :
+- Authorization : Bearer {{token}}
 
 Response Body Success(200) : ketika request body sesuai
 

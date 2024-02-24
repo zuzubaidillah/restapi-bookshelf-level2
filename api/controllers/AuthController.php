@@ -95,8 +95,8 @@ class AuthController
             exit();
         }
 
-        $user = new Users();
         // validasi email yang SAMA
+        $user = new Users();
         $validasi_email = $user->findEmail($request['email']);
         if (is_array($validasi_email)) {
             echo json_encode(['message' => 'Email sudah digunakan']);

@@ -4,13 +4,19 @@
 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/auth/registrasi
 
+Bussiness Logic:
+- cek email yang sama
+- password jadi enkripsi sebelum disimpan
+- simpan data
+- response data yang baru saja di simpan
+
 Request Body :
 
 ```json
 {
-  "name": "Ronaldo",
-  "email": "ronaldo@gmail.com",
-  "password": "ronaldo"
+  "name": "Ronaldo", // isRequired
+  "email": "ronaldo@gmail.com", // isRequired
+  "password": "ronaldo" // isRequired
 }
 ```
 
@@ -39,7 +45,7 @@ Response Body Error(400) : ketika request tidak sesuai
 }
 ```
 
-Response Body Error(400) : ketika email sudah ada
+Response Body Error(409) : ketika email sudah ada
 
 ```json
 {

@@ -39,6 +39,14 @@ Response Body Error(400) : ketika request tidak sesuai
 }
 ```
 
+Response Body Error(400) : ketika email sudah ada
+
+```json
+{
+  "message": "Email sudah digunakan"
+}
+```
+
 Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke database
 
 ```json

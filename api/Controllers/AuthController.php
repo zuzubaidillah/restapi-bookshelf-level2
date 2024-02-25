@@ -70,6 +70,10 @@ class AuthController
         }
 
         // verifikasi request email
+        $model_user = new Users();
+        $check_email = $model_user->findEmail($request['email']);
+        var_dump($check_email, $request['email']);
+        exit();
 
         // Verifikasi password
 

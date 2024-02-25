@@ -60,8 +60,14 @@ class AuthController
      * */
     public function login() {
         // Menerima data JSON dari request
+        $request = json_decode(file_get_contents('php://input'), true);
 
         // Validasi input
+        if (empty($request['email']) || empty($request['password'])) {
+            echo json_encode(['message' => 'Data tidak lengkap harus diisi']);
+            http_response_code(400);
+            exit();
+        }
 
         // verifikasi request email
 

@@ -54,4 +54,21 @@ class AuthController
             echo json_encode(['message' => 'Registrasi gagal, terjadi kesalahan pada database saat proses registrasi']);
         }
     }
+
+    /*
+     * method login digunakan untuk proses mencocokan email dan password yang ada di table users
+     * */
+    public function login() {
+        // Menerima data JSON dari request
+
+        // Validasi input
+
+        // verifikasi request email
+
+        // Verifikasi password
+
+        // Kirim respons sukses dengan token
+
+        // Password tidak cocok
+    }
 }

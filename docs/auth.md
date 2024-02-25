@@ -65,6 +65,13 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/auth/login
 
+Bussiness Logic:
+- validasi request dari client
+- verifikasi email
+- verifikasi password
+- membuat token menggunakan JWT (JSON Web Token)
+- response data sesuai verifikasi email dan password, beserta token yang telah dibuat
+
 Request Body :
 
 ```json

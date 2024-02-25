@@ -22,14 +22,15 @@ class AuthController
             exit();
         }
 
-        $user = new Users();
         // validasi email yang SAMA
+        $user = new Users();
         $validasi_email = $user->findEmail($request['email']);
         if (!($validasi_email)) {
             echo json_encode(['message' => 'login gagal, cek email dan password']);
             http_response_code(400); // Conflict
             exit();
         }
+
         // Verifikasi password
         if (password_verify($request['password'], $validasi_email['password'])) {
             // Password cocok, buat token auth (misalnya JWT atau token sederhana)

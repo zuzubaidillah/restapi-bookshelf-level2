@@ -21,6 +21,8 @@ Route::post($base_url . "/api/auth/registrasi", function (){
     $controller = new AuthController();
     $controller->registrasi();
 });
+Route::post($base_url . '/api/auth/login', function () {
+});
 
 
 // Add more routes here

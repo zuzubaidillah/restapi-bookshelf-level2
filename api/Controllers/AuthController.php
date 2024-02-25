@@ -1,9 +1,10 @@
 <?php
 
 namespace Controllers;
-require_once __DIR__ . "/../../model/users.php";
+require_once __DIR__ . "/../../model/Users.php";
 require_once __DIR__ . "/../../config/TokenJwt.php";
-use Config\{TokenJwt};
+
+use Config\TokenJwt;
 use Model\Users;
 
 class AuthController
@@ -56,48 +57,49 @@ class AuthController
         }
     }
 
-    /*
-     * method login digunakan untuk proses mencocokan email dan password yang ada di table users
-     * */
-    public function login() {
-        // Menerima data JSON dari request
+    public function login()
+    {
+        // menerima request dari client content-type: JSON
         $request = json_decode(file_get_contents('php://input'), true);
 
-        // Validasi input
+        // validasi request
         if (empty($request['email']) || empty($request['password'])) {
+            http_response_code(400);
             echo json_encode(['message' => 'Data tidak lengkap harus diisi']);
-            http_response_code(400);
             exit();
         }
 
-        // verifikasi request email
-        $model_user = new Users();
-        $check_email = $model_user->findEmail($request['email']);
-        if ($check_email === false) {
+        // verifikasi email
+        $model_users = new Users();
+        $verifikasi_email = $model_users->findEmail($request['email']);
+        if ($verifikasi_email === false) {
+            http_response_code(400);
             echo json_encode(['message' => 'login gagal, cek email dan password']);
+            exit();
+        }
+
+        // verifikasi password
+        $verifikasi_password = password_verify($request['password'], $verifikasi_email['password']);
+        if ($verifikasi_password === false) {
+            // response gagal
             http_response_code(400);
+            echo json_encode(['message' => 'login gagal, cek email dan password']);
             exit();
         }
 
-        // Verifikasi password
-        if (password_verify($request['password'], $check_email['password'])) {
-            // Password cocok, buat token auth (misalnya JWT atau token sederhana)
+        // membuat token library JWT (JSON Web Token)
+        $library_token = new TokenJwt();
+        $token_baru = $library_token->create($verifikasi_email['id']);
 
-            $handlerToken = new TokenJwt();
-            $token = $handlerToken->create($check_email['id']);
-            // Kirim respons sukses dengan token
-            unset($check_email['password']);
-            echo json_encode([
-                'data' => $check_email,
-                'message' => 'Login berhasil',
-                'token' => $token
-            ]);
-            http_response_code(200); // OK
-        } else {
-            // Password tidak cocok
-            echo json_encode(['message' => 'Login gagal, cek email dan password']);
-            http_response_code(400); // Unauthorized
-            exit();
-        }
+        // hapus key password
+        unset($verifikasi_email['password']);
+
+        // response data dan token
+        http_response_code(200);
+        echo json_encode([
+            'data' => $verifikasi_email,
+            'message' => 'Login Berhasil',
+            'token' => $token_baru
+        ]);
     }
 }

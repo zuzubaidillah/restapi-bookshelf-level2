@@ -79,9 +79,24 @@ class AuthController
         }
 
         // Verifikasi password
+        if (password_verify($request['password'], $validasi_email['password'])) {
+            // Password cocok, buat token auth (misalnya JWT atau token sederhana)
 
-        // Kirim respons sukses dengan token
-
-        // Password tidak cocok
+            $handlerToken = new TokenJwt();
+            $token = $handlerToken->create($validasi_email['id']);
+            // Kirim respons sukses dengan token
+            unset($validasi_email['password']);
+            echo json_encode([
+                'data' => $validasi_email,
+                'message' => 'Login berhasil',
+                'token' => $token
+            ]);
+            http_response_code(200); // OK
+        } else {
+            // Password tidak cocok
+            echo json_encode(['message' => 'Login gagal, cek email dan password']);
+            http_response_code(400); // Unauthorized
+            exit();
+        }
     }
 }

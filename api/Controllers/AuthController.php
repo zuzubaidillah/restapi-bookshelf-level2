@@ -1,8 +1,9 @@
 <?php
 
 namespace Controllers;
-require_once __DIR__ . "/../../model/Users.php";
-
+require_once __DIR__ . "/../../model/users.php";
+require_once __DIR__ . "/../../config/TokenJwt.php";
+use Config\{TokenJwt};
 use Model\Users;
 
 class AuthController
@@ -79,15 +80,15 @@ class AuthController
         }
 
         // Verifikasi password
-        if (password_verify($request['password'], $validasi_email['password'])) {
+        if (password_verify($request['password'], $check_email['password'])) {
             // Password cocok, buat token auth (misalnya JWT atau token sederhana)
 
             $handlerToken = new TokenJwt();
-            $token = $handlerToken->create($validasi_email['id']);
+            $token = $handlerToken->create($check_email['id']);
             // Kirim respons sukses dengan token
-            unset($validasi_email['password']);
+            unset($check_email['password']);
             echo json_encode([
-                'data' => $validasi_email,
+                'data' => $check_email,
                 'message' => 'Login berhasil',
                 'token' => $token
             ]);

@@ -76,8 +76,8 @@ Request Body :
 
 ```json
 {
-  "email": "ronaldo@gmail.com",
-  "password": "ronaldo"
+  "email": "ronaldo@gmail.com", // isRequired
+  "password": "ronaldo" // isRequired
 }
 ```
 

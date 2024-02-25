@@ -72,8 +72,11 @@ class AuthController
         // verifikasi request email
         $model_user = new Users();
         $check_email = $model_user->findEmail($request['email']);
-        var_dump($check_email, $request['email']);
-        exit();
+        if ($check_email === false) {
+            echo json_encode(['message' => 'login gagal, cek email dan password']);
+            http_response_code(400);
+            exit();
+        }
 
         // Verifikasi password
 

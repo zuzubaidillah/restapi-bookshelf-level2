@@ -32,7 +32,9 @@ class BookController
 
         $model_book = new Book();
         $result = $model_book->read($verifikasi_token['user_id']);
-        var_dump($result);
-        exit();
+        echo json_encode([
+            'data' => $result
+        ]);
+        http_response_code(200); // OK
     }
 }

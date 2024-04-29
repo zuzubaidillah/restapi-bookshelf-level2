@@ -63,6 +63,14 @@ class Users
             return $exception;
         }
     }
+
+    public function findId($user_id)
+    {
+        $query = "SELECT * FROM users WHERE id=:id and deleted_at IS NULL";
+        $this->db->query($query);
+        $this->db->bind('id', $user_id);
+        return $this->db->single();
+    }
 }
 
 ?>

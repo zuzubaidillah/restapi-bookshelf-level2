@@ -6,10 +6,28 @@
 
 Endpoint :  GET /smkti/restApi-bookshelf-level2/api/book
 
+Bussiness Logic:
+- client request params q
+  - artinya client ingin menampilkan data berdasarkan kata kunci params q
+  - lakukan pengambilan data berdasarkan kolom *title* LIKE %params.q%
+- client request params status [all, sudah, belum]
+  - all artinya menampilkan data secara keseluruhan
+  - sudah artinya menampilkan data kolom *isComplete* = 1 (sudah dibaca)
+  - belum artinya menampilkan data kolom *isComplete* = 0 (belum dibaca)
+- dam menampilkan data buku berdasarkan *creator_id*
+- dam menampilkan data buku berdasarkan *deleted_at IS NULL*
+- response data
+
 Headers :
 - Authorization : Bearer {{token}}
 
-Request Body : GET 
+Request params :
+
+```text
+
+```
+
+Response Body : GET 
 
 ```json
 {

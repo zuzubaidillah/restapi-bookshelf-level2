@@ -24,7 +24,8 @@ Headers :
 Request params :
 
 ```text
-
+status:all // isRequired [all, sudah, belum]
+q:buku // optional | akan mencari judul buku
 ```
 
 Response Body : GET 

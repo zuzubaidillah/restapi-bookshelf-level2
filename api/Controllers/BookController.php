@@ -28,6 +28,7 @@ class BookController
         }
 
         $status = "";
+        $filter_title = null;
 
         // Pengecekan apakah status diatur dalam URL
         if (isset($_GET['status'])) {
@@ -45,11 +46,17 @@ class BookController
             }
         }
 
+        // Pengecekan apakah status diatur dalam URL
+        if (isset($_GET['q'])) {
+            // Pengecekan nilai status
+            $filter_title = $_GET['q'];
+        }
+
         $token_jwt = new TokenJwt();
         $verifikasi_token = $token_jwt->verify($jwt);
 
         $model_book = new Book();
-        $result = $model_book->read($verifikasi_token['user_id'], $status);
+        $result = $model_book->read($verifikasi_token['user_id'], $status, $filter_title);
         echo json_encode([
             'data' => $result
         ]);

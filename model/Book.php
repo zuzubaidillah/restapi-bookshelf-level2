@@ -28,7 +28,7 @@ class Book
         $this->db = new Database();
     }
 
-    public function read($user_id, $status)
+    public function read($user_id, $status, $filter_title)
     {
         try {
             $query = "SELECT book.*, users.name as creator_name
@@ -36,11 +36,17 @@ class Book
             INNER JOIN users ON users.id = book.creator_id
             WHERE book.deleted_at IS NULL AND book.creator_id = :creator_id
             AND book.status = :status
+            AND book.title LIKE :filter_title
             ORDER BY book.created_at DESC";
+
+            // kita lakukan SQL injection
+            // agar proses filter aman dari nilai yang tidak diinginkan seperti tanda '
+            $filter_title = htmlspecialchars($filter_title, ENT_QUOTES);
 
             $this->db->query($query);
             $this->db->bind('creator_id', $user_id);
             $this->db->bind('status', $status);
+            $this->db->bind('filter_title', "%$filter_title%");
             return $this->db->single();
         } catch (PDOException $exception) {
             return $exception;

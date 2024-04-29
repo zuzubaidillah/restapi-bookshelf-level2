@@ -105,7 +105,30 @@ class AuthController
 
     public function getByToken()
     {
-        var_dump('getByToken');
+        // Mendapatkan token dari header
+        $headers = getallheaders();
+        $jwt = null;
+
+        if (isset($headers['Authorization'])) {
+            $bearer = explode(' ', $headers['Authorization']);
+            $index_token = (sizeof($bearer)-1);
+            $jwt = $bearer[$index_token] ?? null;
+        }
+
+        if (!$jwt) {
+            echo json_encode(['message' => 'Akses ditolak. Token tidak ditemukan.']);
+            http_response_code(401); // Unauthorized
+            exit();
+        }
+
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $user = new Users();
+        $result = $user->findId($verifikasi_token['user_id']);
+        unset($result['password']);
+        echo json_encode(['data' => $result]);
+        http_response_code(200);
         exit();
     }
 }

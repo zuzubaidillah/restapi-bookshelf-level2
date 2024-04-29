@@ -29,45 +29,6 @@ Route::post($base_url . "/api/auth/login", function (){
     $controller = new AuthController();
     $controller->login();
 });
-Route::get($base_url . "/api/auth/current", function (){
-    // ambil bearer Token yang di request client
-    $headers = getallheaders();
-    $jwt = null;
-
-    // jika ada array dengan key Authorization
-    if (isset($headers['Authorization'])) {
-        $bearer = explode(' ', $headers['Authorization']);
-        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
-    }
-
-    // jika tidak ditemukan key Authorization
-    if (!$jwt) {
-        http_response_code(401); // Unauthorized
-        echo json_encode(['message' => 'Akses ditolak. Token tidak ditemukan.']);
-        exit();
-    }
-
-    //proses cek token
-    try {
-        $token_jwt = new TokenJwt();
-        $verifikasi_token = $token_jwt->verify($jwt);
-
-        $user = new Users();
-        $result = $user->findId($verifikasi_token['user_id']);
-        if (!$result) {
-            http_response_code(401);
-            echo json_encode(['message' => 'users tidak ditemukan']);
-            exit();
-        }
-    } catch (Exception $e) {
-        http_response_code(401); // Unauthorized
-        echo json_encode(['message' => 'Token tidak valid: ' . $e->getMessage()]);
-        exit();
-    }
-    
-    $controller = new AuthController();
-    $controller->current();
-});
 
 
 // Add more routes here

@@ -28,17 +28,19 @@ class Book
         $this->db = new Database();
     }
 
-    public function read($user_id)
+    public function read($user_id, $status)
     {
         try {
             $query = "SELECT book.*, users.name as creator_name
             FROM book
             INNER JOIN users ON users.id = book.creator_id
             WHERE book.deleted_at IS NULL AND book.creator_id = :creator_id
+            AND book.status = :status
             ORDER BY book.created_at DESC";
 
             $this->db->query($query);
             $this->db->bind('creator_id', $user_id);
+            $this->db->bind('status', $status);
             return $this->db->single();
         } catch (PDOException $exception) {
             return $exception;

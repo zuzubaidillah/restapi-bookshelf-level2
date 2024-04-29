@@ -27,11 +27,29 @@ class BookController
             exit();
         }
 
+        $status = "";
+
+        // Pengecekan apakah status diatur dalam URL
+        if (isset($_GET['status'])) {
+            // Pengecekan nilai status
+            $status_param = $_GET['status'];
+
+            // Hanya set status jika nilainya adalah all, belum, atau sudah
+            if ($status_param === 'all' || $status_param === 'belum' || $status_param === 'sudah') {
+                $status = $status_param;
+            } else {
+                $this->sendJson([
+                    'message' => 'parmas status tidak sesuai. harus (all,belum,sudah)'
+                ], 400);
+                exit();
+            }
+        }
+
         $token_jwt = new TokenJwt();
         $verifikasi_token = $token_jwt->verify($jwt);
 
         $model_book = new Book();
-        $result = $model_book->read($verifikasi_token['user_id']);
+        $result = $model_book->read($verifikasi_token['user_id'], $status);
         echo json_encode([
             'data' => $result
         ]);

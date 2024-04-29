@@ -29,7 +29,10 @@ class BookController
 
         $token_jwt = new TokenJwt();
         $verifikasi_token = $token_jwt->verify($jwt);
-        var_dump($verifikasi_token);
+
+        $model_book = new Book();
+        $result = $model_book->read($verifikasi_token['user_id']);
+        var_dump($result);
         exit();
     }
 }

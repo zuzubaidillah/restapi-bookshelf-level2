@@ -30,13 +30,19 @@ class Book
 
     public function read($user_id, $status, $filter_title)
     {
+        $whereQuery = "";
+        if ($status != 'all') {
+            $whereQuery = "AND book.isComplete=:isComplete";
+        }
+        if ($filter_title) {
+            $whereQuery .= " AND book.title LIKE :title";
+        }
         try {
             $query = "SELECT book.*, users.name as creator_name
             FROM book
             INNER JOIN users ON users.id = book.creator_id
             WHERE book.deleted_at IS NULL AND book.creator_id = :creator_id
-            AND book.status = :status
-            AND book.title LIKE :filter_title
+            $whereQuery
             ORDER BY book.created_at DESC";
 
             // kita lakukan SQL injection
@@ -47,7 +53,18 @@ class Book
             $this->db->bind('creator_id', $user_id);
             $this->db->bind('status', $status);
             $this->db->bind('filter_title', "%$filter_title%");
-            return $this->db->single();
+            if ($status != 'all') {
+                if ($status == 'sudah') {
+                    $value = 1;
+                }else if ($status == 'belum') {
+                    $value = 0;
+                }
+                $this->db->bind('isComplete', $value);
+            }
+            if ($filter_title) {
+                $this->db->bind('filter_title', "%$filter_title%");
+            }
+            return $this->db->resultSet();
         } catch (PDOException $exception) {
             return $exception;
         }

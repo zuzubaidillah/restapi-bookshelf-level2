@@ -102,4 +102,10 @@ class AuthController
             'token' => $token_baru
         ]);
     }
+
+    public function getByToken()
+    {
+        var_dump('getByToken');
+        exit();
+    }
 }

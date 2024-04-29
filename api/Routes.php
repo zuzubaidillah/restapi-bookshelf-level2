@@ -66,7 +66,7 @@ Route::get($base_url . "/api/auth/current", function (){
     }
     
     $controller = new AuthController();
-    $controller->current();
+    $controller->getByToken();
 });
 
 

@@ -10,7 +10,7 @@ use Config\TokenJwt;
 use Controllers\AuthController;
 use Model\Users;
 
-$base_url = "/smkti/restapi-bookshelf-level2-action-video";
+$base_url = "/smkti/restapi-bookshelf-level2";
 
 Route::post($base_url . "/api/registrasi", function () {
     echo json_encode([
@@ -28,6 +28,49 @@ Route::post($base_url . "/api/auth/registrasi", function (){
 Route::post($base_url . "/api/auth/login", function (){
     $controller = new AuthController();
     $controller->login();
+});
+Route::get($base_url . "/api/auth/current", function (){
+    // verifikasi token
+    $headers = getallheaders();
+    $jwt = null;
+
+    if (isset($headers['Authorization'])) {
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+    }
+
+    if ($jwt == null) {
+        //    response token tidak ditemukan
+        http_response_code(400);
+        echo json_encode([
+            "message" => "Akses ditolak. Token tidak ditemukan"
+        ]);
+        exit();
+    }
+
+    try {
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $model_user = new Users();
+        $result = $model_user->findId($verifikasi_token['user_id']);
+
+        if ($result == false) {
+            http_response_code(401);
+            echo json_encode(['message' => 'users tidak ditemukan']);
+            exit();
+        }
+    } catch (Exception $e) {
+        http_response_code(401); // Unauthorized
+        echo json_encode([
+            'message' => 'Token tidak valid: ' . $e->getMessage()
+        ]);
+        exit();
+    }
+
+    $controller = new AuthController();
+    $controller->getByToken();
 });
 
 

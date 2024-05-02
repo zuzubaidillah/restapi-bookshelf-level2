@@ -2,12 +2,15 @@
 //file Routes.php digunakan untuk list sebuah endpoint
 require_once __DIR__ . '/../config/Route.php';
 require_once __DIR__ . '/Controllers/AuthController.php';
+require_once __DIR__ . '/Controllers/BookController.php';
 require_once __DIR__ . '/../config/TokenJwt.php';
 require_once __DIR__ . '/../model/Users.php';
+require_once __DIR__ . '/../model/Book.php';
 
 use Config\Route;
 use Config\TokenJwt;
 use Controllers\AuthController;
+use Controllers\BookController;
 use Model\Users;
 
 $base_url = "/smkti/restapi-bookshelf-level2";
@@ -71,6 +74,45 @@ Route::get($base_url . "/api/auth/current", function (){
 
     $controller = new AuthController();
     $controller->getByToken();
+});
+
+/**
+ * API BOOK
+ * */
+Route::get($base_url . "/api/book", function (){
+    // verifikasi token
+    $headers = getallheaders();
+    $jwt = null;
+
+    if (isset($headers['Authorization'])) {
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+    }
+
+    if ($jwt == null) {
+        //    response token tidak ditemukan
+        http_response_code(400);
+        echo json_encode([
+            "message" => "Akses ditolak. Token tidak ditemukan"
+        ]);
+        exit();
+    }
+
+    try {
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $controller = new BookController();
+        $controller->getBooks();
+
+    } catch (Exception $e) {
+        http_response_code(401); // Unauthorized
+        echo json_encode([
+            'message' => 'Token tidak valid: ' . $e->getMessage()
+        ]);
+        exit();
+    }
 });
 
 

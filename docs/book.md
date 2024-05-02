@@ -78,7 +78,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
 
 Bussiness logic :
-- 
+- verifikasi request body client
+- cek title/judul yang sama
+- response data yang baru saja disimpan
 
 Headers :
 - Authorization : Bearer {{token}}
@@ -127,6 +129,14 @@ Response Body Error(400) : ketika request tidak sesuai
     },
     "error": "request tidak lengkap",
     "message": "request tidak lengkap"
+}
+```
+
+Response Body Error(400) : ketika title sudah ada
+
+```json
+{
+  "message": "Judul buku sudah ada. di buat oleh pengguna ZUZ"
 }
 ```
 

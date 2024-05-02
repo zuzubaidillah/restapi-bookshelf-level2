@@ -51,6 +51,20 @@ Response Body : GET
 }
 ```
 
+Response Body Error(400) : berikut yang akan tampil ada beberapa response
+
+```json
+{
+  "message": "parmas status harus dikirim"
+}
+```
+
+```json
+{
+  "message": "parmas status tidak sesuai. harus (all,belum,sudah)"
+}
+```
+
 Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke database
 
 ```json
@@ -62,6 +76,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 ### BOOK-menambahkan data
 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
+
+Bussiness logic :
+- 
 
 Headers :
 - Authorization : Bearer {{token}}

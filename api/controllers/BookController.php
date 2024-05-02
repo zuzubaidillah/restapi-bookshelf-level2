@@ -31,6 +31,11 @@ class BookController
                 ], 400);
                 exit();
             }
+        } else {
+            $this->sendJson([
+                'message' => 'parmas status harus dikirim'
+            ], 400);
+            exit();
         }
 
         $user_id = (auth())->id;

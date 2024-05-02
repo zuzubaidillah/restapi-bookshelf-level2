@@ -100,32 +100,67 @@ class BookController
     public function createBook()
     {
         // validasi request
-        $validasi = $this->validasiCreate();
-        if ($validasi) {
-            $this->sendJson([
-                "errors" => $validasi,
+        $errors = [];
+        // Validasi 'title' required
+        if (empty($_POST['title'])) {
+            $errors['title'] = 'Judul buku diperlukan.';
+        }
+
+        // Validasi 'year' required
+        if (empty($_POST['year']) || !is_numeric($_POST['year'])) {
+            $errors['year'] = 'Tahun harus berupa angka.';
+        }
+
+        // Validasi 'author' required
+        if (empty($_POST['author'])) {
+            $errors['author'] = 'Nama penulis diperlukan.';
+        }
+
+        // Validasi 'isComplete' required
+        if (isset($_POST['isComplete'])) {
+            if ($_POST['isComplete'] != '1' && $_POST['isComplete'] != '0') {
+                $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
+            }
+        }
+
+        // Validasi 'file' required
+        if (!isset($_FILES['file'])) {
+            $errors['file'] = 'File harus diisi.';
+        } else if ($_FILES['file']['name'] === "") {
+            $errors['file'] = 'File harus diisi.';
+        }
+        if (count($errors) >= 1) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
+                "errors" => $errors,
                 "error" => "request tidak lengkap",
                 "message" => "request tidak lengkap"
-            ], 400);
+            ]);
             exit();
         }
 
+        // buat object memanggil mmodel Book
+        $model_book = new Book();
         // cek title sama
-        $book = new Book();
-        $find_book = $book->findByTitleRelasiUsers($_POST['title']);
+        $find_book = $model_book->findByTitleRelasiUsers($_POST['title']);
         if ($find_book) {
             $user_name = strtoupper($find_book['users_name']);
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Judul buku sudah ada. di buat oleh pengguna $user_name",
-            ], 400);
+            ]);
             exit();
         }
 
         // Mengecek ukuran file
         if (!$_FILES["file"]["size"] || $_FILES["file"]["size"] > (2 * 1024 * 1024)) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Ukuran file terlalu besar. Maksimal 2MB."
-            ], 400);
+            ]);
             exit();
         }
 
@@ -142,9 +177,11 @@ class BookController
 
         // Mengecek tipe file
         if (!in_array(strtolower($fileType), $allowedTypes)) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
-            ], 400);
+            ]);
             exit();
         }
 
@@ -171,15 +208,27 @@ class BookController
                 ];
                 $book = new Book();
                 $result = $book->save($form_data);
-                $data = ['data' => $result];
-                $this->sendJson($data, 201);
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode([
+                    'data' => $result
+                ]);
+                exit();
             } else {
-                $data = ['message' => 'Maaf, terjadi kesalahan saat mengupload file.'];
-                $this->sendJson($data, 400);
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode([
+                    'message' => 'Maaf, terjadi kesalahan saat mengupload file.'
+                ]);
+                exit();
             }
         } catch (Exception $e) {
-            $data = ['message' => 'Terjadi kesalahan: ' . $e->getMessage()];
-            $this->sendJson($data, 200); // 500 Internal Server Error
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode([
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+            exit();
         }
     }
 

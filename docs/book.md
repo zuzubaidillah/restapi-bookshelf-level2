@@ -80,6 +80,7 @@ Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
 Bussiness logic :
 - verifikasi request body client
 - cek title/judul yang sama
+- lakukan upload file kedalam folder *uploads*
 - response data yang baru saja disimpan
 
 Headers :

@@ -15,7 +15,24 @@ class BookController
 
     public function getBooks()
     {
+        // Mendapatkan token dari header
+        $headers = getallheaders();
+        $jwt = null;
+
+        if (isset($headers['Authorization'])) {
+            $bearer = explode(' ', $headers['Authorization']);
+            $index_token = (sizeof($bearer)-1);
+            $jwt = $bearer[$index_token] ?? null;
+        }
+
+        if (!$jwt) {
+            echo json_encode(['message' => 'Akses ditolak. Token tidak ditemukan.']);
+            http_response_code(401); // Unauthorized
+            exit();
+        }
+
         $status = "";
+        $filter_title = null;
 
         // Pengecekan apakah status diatur dalam URL
         if (isset($_GET['status'])) {
@@ -31,19 +48,23 @@ class BookController
                 ], 400);
                 exit();
             }
-        } else {
-            $this->sendJson([
-                'message' => 'parmas status harus dikirim'
-            ], 400);
-            exit();
         }
 
-        $user_id = (auth())->id;
+        // Pengecekan apakah status diatur dalam URL
+        if (isset($_GET['q'])) {
+            // Pengecekan nilai status
+            $filter_title = $_GET['q'];
+        }
 
-        $book = new Book();
-        $dataBook = $book->read($user_id, $status);
-        $data = ['data' => $dataBook];
-        $this->sendJson($data, 200);
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $model_book = new Book();
+        $result = $model_book->read($verifikasi_token['user_id'], $status, $filter_title);
+        echo json_encode([
+            'data' => $result
+        ]);
+        http_response_code(200); // OK
     }
 
     public function getBookById($book_id)

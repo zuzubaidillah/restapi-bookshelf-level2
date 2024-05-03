@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../../model/book.php";
+require_once __DIR__ . "/../../model/Book.php";
 
 use Model\Book;
 

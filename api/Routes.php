@@ -1,10 +1,16 @@
 <?php
 require_once __DIR__ . '/../config/Route.php';
+require_once __DIR__ . '/../config/TokenJwt.php';
 require_once __DIR__ . "/AuthMiddleware.php";
 require_once __DIR__ . "/../config/helper.php";
 require_once __DIR__ . "/controllers/BookController.php";
+require_once __DIR__ . "/controllers/UserController.php";
+require_once __DIR__ . "/../model/Book.php";
+require_once __DIR__ . "/../model/Users.php";
 
 use Config\Route;
+use Config\TokenJwt;
+
 
 $base_url = "/smkti/FIX-restApi-bookshelf-level2";
 

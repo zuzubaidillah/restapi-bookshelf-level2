@@ -11,7 +11,6 @@ require_once __DIR__ . "/../model/Users.php";
 use Config\Route;
 use Config\TokenJwt;
 
-
 $base_url = "/smkti/FIX-restApi-bookshelf-level2";
 
 Route::get($base_url . '/api/mock/{code}', function ($code) {

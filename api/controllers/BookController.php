@@ -186,18 +186,18 @@ class BookController
         }
 
         // Direktori tujuan untuk menyimpan file
-        $targetDir = "uploads/";
-        $fileName = basename($_FILES["file"]["name"]);
+        $target_folder = "uploads/";
+        $nama_file = basename($_FILES["file"]["name"]);
         // Menghasilkan nama file unik
-        $fileType = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
-        $fileName = uniqid() . '.' . $fileType;
-        $targetFilePath = $targetDir . $fileName;
+        $tipe_file = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
+        $nama_file = uniqid() . '.' . $tipe_file;
+        $kombinasi_target_file_name = $target_folder . $nama_file;
 
         // Daftar ekstensi file yang diperbolehkan
-        $allowedTypes = ['jpg', 'jpeg', 'png', 'pdf'];
+        $tipe_file_sesui = ['jpg', 'jpeg', 'png', 'pdf'];
 
         // Mengecek tipe file
-        if (!in_array(strtolower($fileType), $allowedTypes)) {
+        if (!in_array(strtolower($tipe_file), $tipe_file_sesui)) {
             header('Content-Type: application/json');
             http_response_code(400);
             echo json_encode([
@@ -208,12 +208,12 @@ class BookController
 
         try {
             // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
+            if (!file_exists($target_folder)) {
+                mkdir($target_folder, 0777, true);
             }
 
             // Upload file ke direktori tujuan
-            if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $kombinasi_target_file_name)) {
                 $title = $_POST['title'];
                 $year = $_POST['year'];
                 $author = $_POST['author'];
@@ -223,7 +223,7 @@ class BookController
                     "year" => $year,
                     "author" => $author,
                     "is_complete" => $isComplete,
-                    "file" => $targetFilePath,
+                    "file" => $kombinasi_target_file_name,
                     "created_at" => date("Y-m-d H:i:s"),
                     "creator_id" => (auth())->id
                 ];
@@ -420,18 +420,18 @@ class BookController
             unlink($oldFilePath);
         }
 
-        $targetDir = "uploads/";
-        $fileName = basename($_FILES["file"]["name"]);
+        $target_folder = "uploads/";
+        $nama_file = basename($_FILES["file"]["name"]);
         // Menghasilkan nama file unik
-        $fileType = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
-        $fileName = uniqid() . '.' . $fileType;
-        $targetFilePath = $targetDir . $fileName;
+        $tipe_file = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
+        $nama_file = uniqid() . '.' . $tipe_file;
+        $kombinasi_target_file_name = $target_folder . $nama_file;
 
         // Daftar ekstensi file yang diperbolehkan
-        $allowedTypes = ['jpg', 'jpeg', 'png', 'pdf'];
+        $tipe_file_sesui = ['jpg', 'jpeg', 'png', 'pdf'];
 
         // Mengecek tipe file
-        if (!in_array(strtolower($fileType), $allowedTypes)) {
+        if (!in_array(strtolower($tipe_file), $tipe_file_sesui)) {
             $this->sendJson([
                 "message" => "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
             ], 400);
@@ -439,14 +439,14 @@ class BookController
         }
         try {
             // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
-            if (!file_exists($targetDir)) {
-                mkdir($targetDir, 0777, true);
+            if (!file_exists($target_folder)) {
+                mkdir($target_folder, 0777, true);
             }
 
             // Upload file ke direktori tujuan
-            if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $kombinasi_target_file_name)) {
                 $book = new Book();
-                $result = $book->updateFile($book_id, $targetFilePath);
+                $result = $book->updateFile($book_id, $kombinasi_target_file_name);
                 $data = ['data' => $result];
                 $this->sendJson($data, 200);
             } else {

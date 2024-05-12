@@ -54,6 +54,7 @@ class Book
         }
         return $this->db->resultSet(); // akan mengeluarkan nilai false / array
     }
+
 }
 
 ?>

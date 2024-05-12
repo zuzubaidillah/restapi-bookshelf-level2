@@ -11,6 +11,7 @@ use Config\Route;
 use Config\TokenJwt;
 use Controllers\AuthController;
 use Controllers\BookController;
+use Model\Book;
 use Model\Users;
 
 $base_url = "/smkti/restapi-bookshelf-level2";
@@ -115,6 +116,52 @@ Route::get($base_url . "/api/book", function (){
     }
 });
 
+Route::post($base_url . "/api/book", function (){
+    // verifikasi token
+    $headers = getallheaders();
+    $jwt = null;
+
+    if (isset($headers['Authorization'])) {
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+    }
+
+    if ($jwt == null) {
+        //    response token tidak ditemukan
+        http_response_code(400);
+        echo json_encode([
+            "message" => "Akses ditolak. Token tidak ditemukan"
+        ]);
+        exit();
+    }
+
+    try {
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $model_book = new Users();
+        $cek_user_id = $model_book->findId($verifikasi_token['user_id']);
+
+        if ($cek_user_id == false) {
+            http_response_code(401); // Unauthorized
+            echo json_encode([
+                'message' => 'users tidak ditemukan'
+            ]);
+            exit();
+        }
+
+        $controller = new BookController();
+        $controller->createBook();
+
+    } catch (Exception $e) {
+        http_response_code(401); // Unauthorized
+        echo json_encode([
+            'message' => 'Token tidak valid: ' . $e->getMessage()
+        ]);
+        exit();
+    }
+});
 
 // Add more routes here
 Route::run();

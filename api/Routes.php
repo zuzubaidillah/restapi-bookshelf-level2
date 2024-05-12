@@ -9,6 +9,7 @@ require_once __DIR__ . "/../model/Book.php";
 require_once __DIR__ . "/../model/Users.php";
 
 use Config\Route;
+use Model\Users;
 use Config\TokenJwt;
 
 $base_url = "/smkti/FIX-restApi-bookshelf-level2";

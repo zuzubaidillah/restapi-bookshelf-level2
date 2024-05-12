@@ -78,9 +78,14 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
 
 Bussiness logic :
-- verifikasi request body client
+- verifikasi token
+- validasi request client
 - cek title/judul yang sama
+- cek ukuran file maksimal 2mb
+- file harus jpg, jpeg, png, dan pdf
 - lakukan upload file kedalam folder *uploads*
+  - cek apakah ada folder *uploads*, buatkan folder jika blm ada
+- simpan data
 - response data yang baru saja disimpan
 
 Headers :

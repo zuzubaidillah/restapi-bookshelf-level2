@@ -16,19 +16,19 @@ $base_url = "/smkti/FIX-restApi-bookshelf-level2";
 
 Route::get($base_url . '/api/mock/{code}', function ($code) {
     http_response_code((int)$code);
-    echo json_encode(['message'=>'mock-api']);
+    echo json_encode(['message' => 'mock-api']);
 });
 Route::post($base_url . '/api/mock/{code}', function ($code) {
     http_response_code(400);
-    echo json_encode(['message'=>'mock-api']);
+    echo json_encode(['message' => 'mock-api']);
 });
 Route::put($base_url . '/api/mock/{code}', function ($code) {
     http_response_code((int)$code);
-    echo json_encode(['message'=>'mock-api']);
+    echo json_encode(['message' => 'mock-api']);
 });
 Route::delete($base_url . '/api/mock/{code}', function ($code) {
     http_response_code((int)$code);
-    echo json_encode(['message'=>'mock-api']);
+    echo json_encode(['message' => 'mock-api']);
 });
 
 /**
@@ -56,7 +56,7 @@ Route::get($base_url . '/api/auth/current', function () {
 /**
  * ROUTES BOOK
  */
-Route::get($base_url . "/api/book", function (){
+Route::get($base_url . "/api/book", function () {
     // ambil bearer Token yang di request client
     $headers = getallheaders();
     $jwt = null;
@@ -133,18 +133,15 @@ Route::post($base_url . '/api/book', function () {
             echo json_encode(['message' => 'users tidak ditemukan']);
             exit();
         }
-        unset($result['password']);
 
-        return $result;
+        $controller = new BookController();
+        $controller->createBook();
 
     } catch (Exception $e) {
         http_response_code(401); // Unauthorized
         echo json_encode(['message' => 'Token tidak valid: ' . $e->getMessage()]);
         exit();
     }
-
-    $controller = new BookController();
-    $controller->createBook();
 });
 
 Route::put($base_url . '/api/book/{book_id}', function ($id) {

@@ -144,7 +144,7 @@ class BookController
                 $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
             }
         }
-
+        
         // Validasi 'file' required
         if (!isset($_FILES['file'])) {
             $errors['file'] = 'File harus diisi.';
@@ -162,7 +162,7 @@ class BookController
             exit();
         }
 
-        // buat object memanggil mmodel Book
+        // buat object memanggil model Book
         $model_book = new Book();
         // cek title sama
         $find_book = $model_book->findByTitleRelasiUsers($_POST['title']);

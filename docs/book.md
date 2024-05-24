@@ -28,26 +28,26 @@ status:all // isRequired [all, sudah, belum]
 q:buku // optional | akan mencari judul buku
 ```
 
-Response Body : GET 
+Response Body : GET
 
 ```json
 {
-    "data": [
-        {
-            "id": 1147,
-            "title": "Buku Akuntansi",
-            "year": 2020,
-            "author": "Hadi",
-            "isComplete": 0,
-            "file": "uploads/65cb758c638fb.pdf",
-            "created_at": "2024-02-13 13:58:36",
-            "updated_at": null,
-            "deleted_at": null,
-            "creator_id": 2,
-            "updator_id": null,
-            "creator_name": "jane marie"
-        }
-    ]
+  "data": [
+    {
+      "id": 1147,
+      "title": "Buku Akuntansi",
+      "year": 2020,
+      "author": "Hadi",
+      "isComplete": 0,
+      "file": "uploads/65cb758c638fb.pdf",
+      "created_at": "2024-02-13 13:58:36",
+      "updated_at": null,
+      "deleted_at": null,
+      "creator_id": 2,
+      "updator_id": null,
+      "creator_name": "jane marie"
+    }
+  ]
 }
 ```
 
@@ -78,8 +78,14 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 Endpoint :  POST /smkti/restApi-bookshelf-level2/api/book
 
 Bussiness logic :
-- verifikasi request body client
+- verifikasi token
+- validasi request client
 - cek title/judul yang sama
+- cek ukuran file maksimal 2mb
+- file harus jpg, jpeg, png, dan pdf
+- lakukan upload file kedalam folder *uploads*
+  - cek apakah ada folder *uploads*, buatkan folder jika blm ada
+- simpan data
 - response data yang baru saja disimpan
 
 Headers :
@@ -89,11 +95,11 @@ Request Body : POST
 
 ```json
 {
-    "title": "Buku Akuntansi", // isRequired
-    "year": 2021, // isRequired
-    "author": "Hadi", // isRequired
-    "file": (binary), // isRequired
-    "isComplete": 0 // optional, if not request default value 0
+  "title": "Buku Akuntansi", // isRequired
+  "year": 2021, // isRequired
+  "author": "Hadi", // isRequired
+  "file": (binary), // isRequired
+  "isComplete": 0 // optional, if not request default value 0
 }
 ```
 
@@ -101,19 +107,19 @@ Response Body Success(200) : ketika request body sesuai
 
 ```json
 {
-    "data": {
-        "id": 1147,
-        "title": "Buku Akuntansi",
-        "year": 2020,
-        "author": "Hadi",
-        "isComplete": 0,
-        "file": "uploads/65cb758c638fb.pdf",
-        "created_at": "2024-02-13 13:58:36",
-        "updated_at": null,
-        "deleted_at": null,
-        "creator_id": 2,
-        "updator_id": null
-    }
+  "data": {
+    "id": 1147,
+    "title": "Buku Akuntansi",
+    "year": 2020,
+    "author": "Hadi",
+    "isComplete": 0,
+    "file": "uploads/65cb758c638fb.pdf",
+    "created_at": "2024-02-13 13:58:36",
+    "updated_at": null,
+    "deleted_at": null,
+    "creator_id": 2,
+    "updator_id": null
+  }
 }
 ```
 
@@ -121,14 +127,14 @@ Response Body Error(400) : ketika request tidak sesuai
 
 ```json
 {
-    "errors": {
-        "title": "Judul buku diperlukan.",
-        "year": "Tahun harus berupa angka.",
-        "author": "Nama penulis diperlukan.",
-        "file": "File buku diperlukan.."
-    },
-    "error": "request tidak lengkap",
-    "message": "request tidak lengkap"
+  "errors": {
+    "title": "Judul buku diperlukan.",
+    "year": "Tahun harus berupa angka.",
+    "author": "Nama penulis diperlukan.",
+    "file": "File buku diperlukan.."
+  },
+  "error": "request tidak lengkap",
+  "message": "request tidak lengkap"
 }
 ```
 
@@ -144,7 +150,7 @@ Response Body Error(400) : ketika tipe file tidak sesuai
 
 ```json
 {
-    "message": "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
+  "message": "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
 }
 ```
 
@@ -152,7 +158,7 @@ Response Body Error(400) : ketika ukuran file terlalu besar
 
 ```json
 {
-    "message": "Ukuran file terlalu besar. Maksimal 2MB."
+  "message": "Ukuran file terlalu besar. Maksimal 2MB."
 }
 ```
 
@@ -177,20 +183,20 @@ Response Body Success(200) : ketika request body sesuai
 
 ```json
 {
-    "data": {
-        "id": 1147,
-        "title": "Buku Akuntansi",
-        "year": 2020,
-        "author": "Hadi",
-        "isComplete": 0,
-        "file": "uploads/65cb758c638fb.pdf",
-        "created_at": "2024-02-13 13:58:36",
-        "updated_at": null,
-        "deleted_at": null,
-        "creator_id": 2,
-        "updator_id": null,
-        "creator_name": "jane marie"
-    }
+  "data": {
+    "id": 1147,
+    "title": "Buku Akuntansi",
+    "year": 2020,
+    "author": "Hadi",
+    "isComplete": 0,
+    "file": "uploads/65cb758c638fb.pdf",
+    "created_at": "2024-02-13 13:58:36",
+    "updated_at": null,
+    "deleted_at": null,
+    "creator_id": 2,
+    "updator_id": null,
+    "creator_name": "jane marie"
+  }
 }
 ```
 
@@ -198,30 +204,30 @@ Response Body Error(400) : ketika parameter(params) {{book_id}} tidak ditemukan 
 
 ```json
 {
-    "message": "Buku id 1147 tidak ditemukan"
+  "message": "Buku id 1147 tidak ditemukan"
 }
 ```
 
 Response Body Error(400) : ketika request tidak sesuai
 ```json
 {
-    "message": "Token telah kedaluwarsa"
+  "message": "Token telah kedaluwarsa"
 }
 
 {
-    "message": "Token tidak valid"
+  "message": "Token tidak valid"
 }
 
 {
-    "message": "Akses ditolak. Token tidak ditemukan."
+  "message": "Akses ditolak. Token tidak ditemukan."
 }
 
 {
-    "message": "users tidak ditemukan"
+  "message": "users tidak ditemukan"
 }
 
 {
-    "message": "Token tidak valid: $e->getMessage()"
+  "message": "Token tidak valid: $e->getMessage()"
 }
 ```
 
@@ -244,10 +250,10 @@ Request Body : PUT
 
 ```json
 {
-    "title": "Buku Akuntansi update", // isRequired
-    "year": 2021, // isRequired
-    "author": "Hadi update", // isRequired
-    "isComplete": 0 // optional, if not request default value 0
+  "title": "Buku Akuntansi update", // isRequired
+  "year": 2021, // isRequired
+  "author": "Hadi update", // isRequired
+  "isComplete": 0 // optional, if not request default value 0
 }
 ```
 
@@ -255,20 +261,20 @@ Response Body Success(200) : ketika request body sesuai
 
 ```json
 {
-    "message": "Buku berhasil diubah",
-    "data": {
-        "id": 1147,
-        "title": "Buku Akuntansi update",
-        "year": 2021,
-        "author": "Hadi update",
-        "isComplete": 0,
-        "file": "uploads/65cb758c638fb.pdf",
-        "created_at": "2024-02-13 13:58:36",
-        "updated_at": "2024-02-13 14:11:16",
-        "deleted_at": null,
-        "creator_id": 2,
-        "updator_id": 2
-    }
+  "message": "Buku berhasil diubah",
+  "data": {
+    "id": 1147,
+    "title": "Buku Akuntansi update",
+    "year": 2021,
+    "author": "Hadi update",
+    "isComplete": 0,
+    "file": "uploads/65cb758c638fb.pdf",
+    "created_at": "2024-02-13 13:58:36",
+    "updated_at": "2024-02-13 14:11:16",
+    "deleted_at": null,
+    "creator_id": 2,
+    "updator_id": 2
+  }
 }
 ```
 
@@ -276,13 +282,13 @@ Response Body Error(400) : ketika request body tidak sesuai
 
 ```json
 {
-    "errors": {
-        "title": "Judul buku diperlukan.",
-        "year": "Tahun harus berupa angka.",
-        "author": "Nama penulis diperlukan."
-    },
-    "error": "request tidak lengkap",
-    "message": "request tidak lengkap"
+  "errors": {
+    "title": "Judul buku diperlukan.",
+    "year": "Tahun harus berupa angka.",
+    "author": "Nama penulis diperlukan."
+  },
+  "error": "request tidak lengkap",
+  "message": "request tidak lengkap"
 }
 ```
 
@@ -290,7 +296,7 @@ Response Body Error(400) : ketika parameter(params) {{book_id}} tidak ditemukan 
 
 ```json
 {
-    "message": "Buku id 1147 tidak ditemukan"
+  "message": "Buku id 1147 tidak ditemukan"
 }
 ```
 
@@ -298,7 +304,7 @@ Response Body Error(400) : ketika request body title sudah ada di table book
 
 ```json
 {
-    "message": "Judul buku sudah ada. di buat oleh pengguna HADI"
+  "message": "Judul buku sudah ada. di buat oleh pengguna HADI"
 }
 ```
 
@@ -306,7 +312,7 @@ Response Body Error(400) : ketika proses update data di table book bermasalah
 
 ```json
 {
-    "message": "Buku Gagal diubah"
+  "message": "Buku Gagal diubah"
 }
 ```
 
@@ -314,23 +320,23 @@ Response Body Error(400) : ketika request header Token tidak sesuai
 
 ```json
 {
-    "message": "Token telah kedaluwarsa"
+  "message": "Token telah kedaluwarsa"
 }
 
 {
-    "message": "Token tidak valid"
+  "message": "Token tidak valid"
 }
 
 {
-    "message": "Akses ditolak. Token tidak ditemukan."
+  "message": "Akses ditolak. Token tidak ditemukan."
 }
 
 {
-    "message": "users tidak ditemukan"
+  "message": "users tidak ditemukan"
 }
 
 {
-    "message": "Token tidak valid: $e->getMessage()"
+  "message": "Token tidak valid: $e->getMessage()"
 }
 ```
 
@@ -353,7 +359,7 @@ Request Body :
 
 ```json
 {
-    "isComplete": 1 // isRequired
+  "isComplete": 1 // isRequired
 }
 ```
 
@@ -361,20 +367,20 @@ Response Body Success(200) : ketika request body sesuai dan book_id sesuai denga
 
 ```json
 {
-    "message": "Buku telah komplete dibaca",
-    "data": {
-        "id": 1147,
-        "title": "Buku Akuntansi update",
-        "year": 2021,
-        "author": "Hadi update",
-        "isComplete": 1,
-        "file": "uploads/65cb758c638fb.pdf",
-        "created_at": "2024-02-13 13:58:36",
-        "updated_at": "2024-02-13 14:13:23",
-        "deleted_at": null,
-        "creator_id": 2,
-        "updator_id": 2
-    }
+  "message": "Buku telah komplete dibaca",
+  "data": {
+    "id": 1147,
+    "title": "Buku Akuntansi update",
+    "year": 2021,
+    "author": "Hadi update",
+    "isComplete": 1,
+    "file": "uploads/65cb758c638fb.pdf",
+    "created_at": "2024-02-13 13:58:36",
+    "updated_at": "2024-02-13 14:13:23",
+    "deleted_at": null,
+    "creator_id": 2,
+    "updator_id": 2
+  }
 }
 ```
 
@@ -382,11 +388,11 @@ Response Body Error(400) : ketika request body tidak sesuai
 
 ```json
 {
-    "errors": {
-        "isComplete": "komplete membaca diperlukan."
-    },
-    "error": "request tidak lengkap",
-    "message": "request tidak lengkap"
+  "errors": {
+    "isComplete": "komplete membaca diperlukan."
+  },
+  "error": "request tidak lengkap",
+  "message": "request tidak lengkap"
 }
 ```
 
@@ -394,7 +400,7 @@ Response Body Error(400) : ketika parameter(params) {{book_id}} tidak ditemukan 
 
 ```json
 {
-    "message": "Buku id 1147 tidak ditemukan"
+  "message": "Buku id 1147 tidak ditemukan"
 }
 ```
 
@@ -402,7 +408,7 @@ Response Body Error(400) : ketika proses update data di table book bermasalah
 
 ```json
 {
-    "message": "Buku Gagal diubah"
+  "message": "Buku Gagal diubah"
 }
 ```
 
@@ -410,23 +416,23 @@ Response Body Error(400) : ketika request header Token tidak sesuai
 
 ```json
 {
-    "message": "Token telah kedaluwarsa"
+  "message": "Token telah kedaluwarsa"
 }
 
 {
-    "message": "Token tidak valid"
+  "message": "Token tidak valid"
 }
 
 {
-    "message": "Akses ditolak. Token tidak ditemukan."
+  "message": "Akses ditolak. Token tidak ditemukan."
 }
 
 {
-    "message": "users tidak ditemukan"
+  "message": "users tidak ditemukan"
 }
 
 {
-    "message": "Token tidak valid: $e->getMessage()"
+  "message": "Token tidak valid: $e->getMessage()"
 }
 ```
 
@@ -450,7 +456,7 @@ Request Body : POST
 
 ```json
 {
-    "file": (binary)
+  "file": (binary)
 }
 ```
 
@@ -458,19 +464,19 @@ Response Body Success(200) : ketika request body sesuai
 
 ```json
 {
-    "data": {
-        "id": 1147,
-        "title": "Buku Akuntansi update",
-        "year": 2021,
-        "author": "Hadi update",
-        "isComplete": 1,
-        "file": "uploads/65cb7a152d9da.pdf",
-        "created_at": "2024-02-13 13:58:36",
-        "updated_at": "2024-02-13 14:13:23",
-        "deleted_at": null,
-        "creator_id": 2,
-        "updator_id": 2
-    }
+  "data": {
+    "id": 1147,
+    "title": "Buku Akuntansi update",
+    "year": 2021,
+    "author": "Hadi update",
+    "isComplete": 1,
+    "file": "uploads/65cb7a152d9da.pdf",
+    "created_at": "2024-02-13 13:58:36",
+    "updated_at": "2024-02-13 14:13:23",
+    "deleted_at": null,
+    "creator_id": 2,
+    "updator_id": 2
+  }
 }
 ```
 
@@ -478,11 +484,11 @@ Response Body Error(400) : ketika request body tidak sesuai
 
 ```json
 {
-    "errors": {
-        "file": "File harus diisi."
-    },
-    "error": "request tidak lengkap",
-    "message": "request tidak lengkap"
+  "errors": {
+    "file": "File harus diisi."
+  },
+  "error": "request tidak lengkap",
+  "message": "request tidak lengkap"
 }
 ```
 
@@ -490,7 +496,7 @@ Response Body Error(400) : ketika tipe file tidak sesuai
 
 ```json
 {
-    "message": "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
+  "message": "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
 }
 ```
 
@@ -498,7 +504,7 @@ Response Body Error(400) : ketika ukuran file terlalu besar
 
 ```json
 {
-    "message": "Ukuran file terlalu besar. Maksimal 2MB."
+  "message": "Ukuran file terlalu besar. Maksimal 2MB."
 }
 ```
 
@@ -506,23 +512,23 @@ Response Body Error(400) : ketika request tidak sesuai
 
 ```json
 {
-    "message": "Token telah kedaluwarsa"
+  "message": "Token telah kedaluwarsa"
 }
 
 {
-    "message": "Token tidak valid"
+  "message": "Token tidak valid"
 }
 
 {
-    "message": "Akses ditolak. Token tidak ditemukan."
+  "message": "Akses ditolak. Token tidak ditemukan."
 }
 
 {
-    "message": "users tidak ditemukan"
+  "message": "users tidak ditemukan"
 }
 
 {
-    "message": "Token tidak valid: $e->getMessage()"
+  "message": "Token tidak valid: $e->getMessage()"
 }
 ```
 
@@ -545,7 +551,7 @@ Response Body Success(200) : ketika request body sesuai
 
 ```json
 {
-    "message": "Buku berhasil dihapus "
+  "message": "Buku berhasil dihapus "
 }
 ```
 
@@ -553,7 +559,7 @@ Response Body Error(400) : ketika parameter(params) {{book_id}} tidak ditemukan 
 
 ```json
 {
-    "message": "Buku id 1147 tidak ditemukan"
+  "message": "Buku id 1147 tidak ditemukan"
 }
 ```
 
@@ -561,7 +567,7 @@ Response Body Error(400) : ketika proses hapus data di table book bermasalah
 
 ```json
 {
-    "message": "Buku Gagal dihapus"
+  "message": "Buku Gagal dihapus"
 }
 ```
 
@@ -569,23 +575,23 @@ Response Body Error(400) : ketika kesalahan token
 
 ```json
 {
-    "message": "Token telah kedaluwarsa"
+  "message": "Token telah kedaluwarsa"
 }
 
 {
-    "message": "Token tidak valid"
+  "message": "Token tidak valid"
 }
 
 {
-    "message": "Akses ditolak. Token tidak ditemukan."
+  "message": "Akses ditolak. Token tidak ditemukan."
 }
 
 {
-    "message": "users tidak ditemukan"
+  "message": "users tidak ditemukan"
 }
 
 {
-    "message": "Token tidak valid: $e->getMessage()"
+  "message": "Token tidak valid: $e->getMessage()"
 }
 ```
 

@@ -174,6 +174,9 @@ Response Body Error(500) : jika ada salah kode php atau salah proses koneksi ke 
 
 Endpoint :  GET /smkti/restApi-bookshelf-level2/api/book{{book_id}}
 
+Bussiness logic :
+- verifikasi token
+
 Headers :
 - Authorization : Bearer {{token}}
 

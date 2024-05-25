@@ -43,7 +43,7 @@ class Users
 
     public function findId($book_id)
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id=:id and deleted_at IS NULL";
+        $query = "SELECT * FROM book WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', $book_id);
         return $this->db->single();

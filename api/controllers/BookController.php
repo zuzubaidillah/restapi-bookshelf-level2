@@ -70,18 +70,34 @@ class BookController
 
     public function getBookById($book_id)
     {
-        $user_id = (auth())->id;
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
         // Logika untuk mengambil buku berdasarkan ID
-        $book = new Book();
-        $data_book = $book->findIdAndCreator($book_id, $user_id);
-        if (!$data_book) {
-            $this->sendJson([
+        $model_book = new Book();
+        $detail_book = $model_book->findIdAndCreator($book_id, $user_id);
+        if (!$detail_book) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Book id $book_id tidak ditemukan"
-            ], 400);
+            ]);
             exit();
         }
-        $data = ['data' => $data_book];
-        $this->sendJson($data, 200);
+
+        $data = [
+            'data' => $detail_book
+        ];
+        header('Content-Type: application/json');
+        http_response_code(200);
+        echo json_encode($data);
+        exit();
     }
 
     private function validasiCreate()
@@ -121,6 +137,15 @@ class BookController
 
     public function createBook()
     {
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
         // validasi request
         $errors = [];
         // Validasi 'title' required
@@ -226,7 +251,7 @@ class BookController
                     "is_complete" => $isComplete,
                     "file" => $kombinasi_target_file_name,
                     "created_at" => date("Y-m-d H:i:s"),
-                    "creator_id" => (auth())->id
+                    "creator_id" => $user_id
                 ];
                 $book = new Book();
                 $result = $book->save($form_data);

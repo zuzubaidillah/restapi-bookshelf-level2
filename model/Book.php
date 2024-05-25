@@ -55,6 +55,46 @@ class Book
         return $this->db->resultSet(); // akan mengeluarkan nilai false / array
     }
 
+    public function findByTitleRelasiUsers($book_title)
+    {
+        $query = "SELECT book.*, users.name as users_name 
+        FROM book 
+        inner join users on users.id = book.creator_id
+        WHERE book.title=:title and book.deleted_at IS NULL";
+        $this->db->query($query);
+        $this->db->bind('title', "$book_title");
+        return $this->db->single();
+    }
+
+    public function save($form_data)
+    {
+        // id dibuat oleh sisi php
+        $id = mt_rand(1, 9999);
+
+        $query = "INSERT INTO book 
+        (id, title, year, author, isComplete, file, created_at, creator_id) 
+        VALUES (:id, :title, :year, :author, :is_complete, :file, :created_at, :creator_id)";
+        $this->db->query($query);
+        $this->db->bind('id', $id);
+        $this->db->bind('title', $form_data['title']);
+        $this->db->bind('year', $form_data['year']);
+        $this->db->bind('author', $form_data['author']);
+        $this->db->bind('is_complete', $form_data['is_complete']);
+        $this->db->bind('file', $form_data['file']);
+        $this->db->bind('created_at', $form_data['created_at']);
+        $this->db->bind('creator_id', $form_data['creator_id']);
+
+        $res = $this->db->execute();
+        if ($res) {
+            // Mengambil data yang baru disimpan
+            $this->db->query("SELECT * FROM book WHERE id = :id");
+            $this->db->bind('id', $id);
+            return $this->db->single();
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>

@@ -61,8 +61,8 @@ class Book
     {
         $query = "SELECT 
             id, title, year, author, isComplete, file, created_at, updated_at, deleted_at, creator_id, updator_id 
-        FROM " . $this->table_name . " 
-        WHERE id=:id and deleted_at IS NULL";
+        FROM book
+        WHERE id=:id";
 
         $this->db->query($query);
         $this->db->bind('id', $book_id);
@@ -116,8 +116,7 @@ class Book
         FROM book
         inner join users
         WHERE book.title=:title
-          and book.id!=:id
-          and book.deleted_at IS NULL";
+          and book.id!=:id";
         $this->db->query($query);
         $this->db->bind('id', $book_id);
         $this->db->bind('title', $book_title);

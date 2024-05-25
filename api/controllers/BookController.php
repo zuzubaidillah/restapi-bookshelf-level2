@@ -308,13 +308,37 @@ class BookController
 
     public function putBook($book_id)
     {
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
         $request = json_decode(file_get_contents('php://input'), true);
 
         // validasi request
-        $validasi = $this->validasiPut($request);
-        if ($validasi) {
+
+        $errors = [];
+        // Validasi 'title' required
+        if (empty($request['title'])) {
+            $errors['title'] = 'Judul buku diperlukan.';
+        }
+
+        // Validasi 'year' required
+        if (empty($request['year']) || !is_numeric($request['year'])) {
+            $errors['year'] = 'Tahun harus berupa angka.';
+        }
+
+        // Validasi 'author' required
+        if (empty($request['author'])) {
+            $errors['author'] = 'Nama penulis diperlukan.';
+        }
+        if (count($errors) >= 1) {
             $this->sendJson([
-                "errors" => $validasi,
+                "errors" => $errors,
                 "error" => "request tidak lengkap",
                 "message" => "request tidak lengkap"
             ], 400);
@@ -327,9 +351,11 @@ class BookController
         // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
         $find_book_id = $model_book->findId($book_id);
         if (!$find_book_id) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Buku id $book_id tidak ditemukan",
-            ], 400);
+            ]);
             exit();
         }
 
@@ -337,13 +363,14 @@ class BookController
         $find_book = $model_book->findByTitleAndIdRelasiUsers($book_id, $request['title']);
         if ($find_book) {
             $user_name = strtoupper($find_book['users_name']);
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Judul buku sudah ada. di buat oleh pengguna $user_name",
-            ], 400);
+            ]);
             exit();
         }
 
-        $user_id = (auth())->id;
         $form_data = [
             "title" => $request['title'],
             "year" => $request['year'],
@@ -363,7 +390,10 @@ class BookController
             $code = 500;
         }
 
-        $this->sendJson($data, $code);
+        header('Content-Type: application/json');
+        http_response_code($code);
+        echo json_encode($data);
+        exit();
     }
 
     public function putIsCompleteBook($book_id)

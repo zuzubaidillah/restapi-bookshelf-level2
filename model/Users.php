@@ -43,7 +43,7 @@ class Users
 
     public function findId($book_id)
     {
-        $query = "SELECT * FROM book WHERE id=:id";
+        $query = "SELECT * FROM users WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', $book_id);
         return $this->db->single();

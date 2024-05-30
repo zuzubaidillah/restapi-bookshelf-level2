@@ -255,8 +255,7 @@ Request Body : PUT
 {
     "title": "Buku Akuntansi update", // isRequired
     "year": 2021, // isRequired
-    "author": "Hadi update", // isRequired
-    "isComplete": 0 // optional, if not request default value 0
+    "author": "Hadi update" // isRequired
 }
 ```
 

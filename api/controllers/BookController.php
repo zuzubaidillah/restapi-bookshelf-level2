@@ -336,6 +336,8 @@ class BookController
         if (empty($request['author'])) {
             $errors['author'] = 'Nama penulis diperlukan.';
         }
+
+        // variable errors kita lakukan pengecekan
         if (count($errors) >= 1) {
             $this->sendJson([
                 "errors" => $errors,

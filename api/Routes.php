@@ -12,7 +12,7 @@ use Config\Route;
 use Model\Users;
 use Config\TokenJwt;
 
-$base_url = "/smkti/FIX-restApi-bookshelf-level2";
+$base_url = "/smkti/FIX-restapi-bookshelf-level2";
 
 Route::get($base_url . '/api/mock/{code}', function ($code) {
     http_response_code((int)$code);

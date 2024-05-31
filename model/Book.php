@@ -57,16 +57,17 @@ class Book
         return $this->db->resultSet();
     }
 
-    public function findId($book_id)
+    public function findBookWithIdAndCreatorId($book_id, $user_id)
     {
         $query = "SELECT 
             id, title, year, author, isComplete, file, created_at, 
             updated_at, deleted_at, creator_id, updator_id 
         FROM book
-        WHERE id=:id";
+        WHERE id=:id and creator_id=:creator_id";
 
         $this->db->query($query);
         $this->db->bind('id', $book_id);
+        $this->db->bind('creator_id', $user_id);
         return $this->db->single();
     }
 
@@ -155,13 +156,9 @@ class Book
 
     public function update($id, $user_id, $form_data)
     {
-        $query = "UPDATE book SET title=:title, year=:year, author=:author, updated_at=:updated_at, updator_id=:updator_id ";
-        // berhubung request isComplete adalah opsional
-        // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
-        if (isset($form_data['isComplete'])) {
-            $query .= ", isComplete=:isComplete "; // Tambahkan spasi sebelum klausa is_complete
-        }
-        $query .= " WHERE id=:id"; // Tambahkan spasi sebelum klausa WHERE
+        $query = "UPDATE book 
+        SET title=:title, year=:year, author=:author, updated_at=:updated_at, updator_id=:updator_id
+        WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', (int)$id);
         $this->db->bind('title', (string)$form_data['title']);
@@ -177,11 +174,10 @@ class Book
         $res = $this->db->execute();
         if ($res === true) {
             // Mengambil data yang baru disimpan
-            return $this->findId($id);
+            return $this->findBookWithIdAndCreatorId($id, $user_id);
         } else {
             return false;
         }
-
     }
 
     public function updateIsComplete($id, $user_id, $isComplete)
@@ -202,24 +198,24 @@ class Book
         $res = $this->db->execute();
         if ($res === true) {
             // Mengambil data yang baru disimpan
-            return $this->findId($id);
+            return $this->findBookWithIdAndCreatorId($id, $user_id);
         } else {
             return false;
         }
-
     }
 
-    public function updateFile($id, $file)
+    public function updateFile($id, $file, $user_id)
     {
         $query = "UPDATE book SET file=:file WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', $id);
         $this->db->bind('file', $file);
+        $this->db->bind('creator_id', $user_id);
 
         $res = $this->db->execute();
         if ($res) {
             // Mengambil data yang baru disimpan
-            $this->db->query("SELECT * FROM book WHERE id = :id");
+            $this->db->query("SELECT * FROM book WHERE id = :id and creator_id = :creator_id");
             $this->db->bind('id', $id);
             return $this->db->single();
         } else {

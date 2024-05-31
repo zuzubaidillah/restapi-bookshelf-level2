@@ -355,8 +355,8 @@ class BookController
         // memanggil object Book (model dari table book)
         $model_book = new Book();
 
-        // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
-        $find_book_id = $model_book->findId($book_id);
+        // cek id apakah sesuai dengan di table book?
+        $find_book_id = $model_book->findBookWithIdAndCreatorId($book_id, $user_id);
         if (!$find_book_id) {
             header('Content-Type: application/json');
             http_response_code(400);
@@ -442,7 +442,7 @@ class BookController
         $model_book = new Book();
 
         // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
-        $find_book_id = $model_book->findId($book_id);
+        $find_book_id = $model_book->findBookWithIdAndCreatorId($book_id, $user_id);
         if (!$find_book_id) {
             header('Content-Type: application/json');
             http_response_code(400);
@@ -476,6 +476,15 @@ class BookController
 
     public function updateFile($book_id)
     {
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
         // Validasi 'file' optional
         if (!isset($_FILES['file']) || $_FILES['file']['name'] === "") {
             $errors['file'] = 'File harus diisi.';
@@ -493,7 +502,7 @@ class BookController
         $model_book = new Book();
 
         // mengambil data by id
-        $find_book_id = $model_book->findId($book_id);
+        $find_book_id = $model_book->findBookWithIdAndCreatorId($book_id, $user_id);
         if (!$find_book_id) {
             header('Content-Type: application/json');
             http_response_code(400);
@@ -570,6 +579,15 @@ class BookController
 
     public function deleteBook($book_id)
     {
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
         // memvalidasi parameter $book_id
         if (!$book_id) {
             header('Content-Type: application/json');
@@ -584,7 +602,7 @@ class BookController
         $model_book = new Book();
 
         // validasi $book_id dengan data di table book
-        $book = $model_book->findId($book_id);
+        $book = $model_book->findBookWithIdAndCreatorId($book_id, $user_id);
         if ($book === false) {
             header('Content-Type: application/json');
             http_response_code(400);

@@ -255,9 +255,39 @@ Route::put($base_url . '/api/book/{book_id}/read-book', function ($id) {
 
 Route::post($base_url . '/api/book/{book_id}/file', function ($id) {
     // verifikasi token
-    AuthMiddleware::authenticate();
+    $headers = getallheaders();
+    $jwt = null;
 
-    require_once __DIR__ . "/controllers/BookController.php";
+    if (isset($headers['Authorization'])) {
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+    }
+
+    if (!$jwt) {
+        header('Content-Type: application/json');
+        http_response_code(401); // Unauthorized
+        echo json_encode(['message' => 'Akses ditolak. Token tidak ditemukan.']);
+        exit();
+    }
+
+    try {
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+
+        $user = new Users();
+        $result = $user->findId($verifikasi_token['user_id']);
+        if (!$result) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(['message' => 'users tidak ditemukan']);
+            exit();
+        }
+    } catch (Exception $e) {
+        http_response_code(401); // Unauthorized
+        echo json_encode(['message' => 'Token tidak valid: ' . $e->getMessage()]);
+        exit();
+    }
+
     $controller = new BookController();
     $controller->updateFile($id);
 });

@@ -440,9 +440,11 @@ class BookController
         // cek title sama dengan yang ada di table book, kecuali book_id yang sama tidak papa.
         $find_book_id = $model_book->findId($book_id);
         if (!$find_book_id) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Buku id $book_id tidak ditemukan",
-            ], 400);
+            ]);
             exit();
         }
 
@@ -451,7 +453,7 @@ class BookController
         // proses update book
         $book = $model_book->updateIsComplete($book_id, $user_id, $isComplete);
         if ($book) {
-            $message = $request['isComplete']==1 ? 'Buku telah komplete dibaca' : 'Buku diubah ke belum dibaca';
+            $message = $request['isComplete'] == 1 ? 'Buku telah komplete dibaca' : 'Buku diubah ke belum dibaca';
             $data = [
                 'message' => $message,
                 "data" => $book
@@ -487,9 +489,11 @@ class BookController
         // mengambil data by id
         $find_book_id = $model_book->findId($book_id);
         if (!$find_book_id) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Buku id $book_id tidak ditemukan",
-            ], 400);
+            ]);
             exit();
         }
 
@@ -511,30 +515,49 @@ class BookController
 
         // Mengecek tipe file
         if (!in_array(strtolower($tipe_file), $tipe_file_sesui)) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Tipe file tidak diperbolehkan. Hanya jpg, jpeg, png, dan pdf."
-            ], 400);
+            ]);
             exit();
         }
-        try {
-            // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
-            if (!file_exists($target_folder)) {
-                mkdir($target_folder, 0777, true);
-            }
 
+        // Cek apakah direktori uploads ada, jika tidak buat direktori tersebut
+        if (!file_exists($target_folder)) {
+            mkdir($target_folder, 0777, true);
+        }
+
+        try {
             // Upload file ke direktori tujuan
             if (move_uploaded_file($_FILES["file"]["tmp_name"], $kombinasi_target_file_name)) {
+                // proses simpan data
                 $book = new Book();
                 $result = $book->updateFile($book_id, $kombinasi_target_file_name);
-                $data = ['data' => $result];
-                $this->sendJson($data, 200);
+                $data = [
+                    'data' => $result
+                ];
+                header('Content-Type: application/json');
+                http_response_code(200);
+                echo json_encode($data);
+                exit();
             } else {
-                $data = ['message' => 'Maaf, terjadi kesalahan saat mengupload file.'];
-                $this->sendJson($data, 400);
+                $data = [
+                    'message' => 'Maaf, terjadi kesalahan saat mengupload file.'
+                ];
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode($data);
+                exit();
             }
         } catch (Exception $e) {
-            $data = ['message' => 'Terjadi kesalahan: ' . $e->getMessage()];
-            $this->sendJson($data, 500); // 500 Internal Server Error
+            $data = [
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ];
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode($data);
+            exit();
         }
     }
 

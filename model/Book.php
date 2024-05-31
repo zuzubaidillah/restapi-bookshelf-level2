@@ -219,7 +219,7 @@ class Book
         $res = $this->db->execute();
         if ($res) {
             // Mengambil data yang baru disimpan
-            $this->db->query("SELECT * FROM $this->table_name WHERE id = :id");
+            $this->db->query("SELECT * FROM book WHERE id = :id");
             $this->db->bind('id', $id);
             return $this->db->single();
         } else {

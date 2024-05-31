@@ -44,9 +44,11 @@ class BookController
             if ($status_param === 'all' || $status_param === 'belum' || $status_param === 'sudah') {
                 $status = $status_param;
             } else {
-                $this->sendJson([
+                header('Content-Type: application/json');
+                http_response_code(400);
+                echo json_encode([
                     'message' => 'parmas status tidak sesuai. harus (all,belum,sudah)'
-                ], 400);
+                ]);
                 exit();
             }
         }
@@ -340,11 +342,13 @@ class BookController
 
         // variable errors kita lakukan pengecekan
         if (count($errors) >= 1) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(200);
+            echo json_encode([
                 "errors" => $errors,
                 "error" => "request tidak lengkap",
                 "message" => "request tidak lengkap"
-            ], 400);
+            ]);
             exit();
         }
 
@@ -475,11 +479,13 @@ class BookController
         // Validasi 'file' optional
         if (!isset($_FILES['file']) || $_FILES['file']['name'] === "") {
             $errors['file'] = 'File harus diisi.';
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(200);
+            echo json_encode([
                 "errors" => $errors,
                 "error" => "request tidak lengkap",
                 "message" => "request tidak lengkap"
-            ], 400);
+            ]);
             exit();
         }
 
@@ -566,40 +572,47 @@ class BookController
     {
         // memvalidasi parameter $book_id
         if (!$book_id) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "request tidak lengkap"
-            ], 200);
+            ]);
             exit();
         }
 
+        // membuat object
         $model_book = new Book();
 
         // validasi $book_id dengan data di table book
         $book = $model_book->findId($book_id);
         if ($book === false) {
-            $this->sendJson([
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "message" => "Buku id $book_id tidak ditemukan"
-            ], 200);
+            ]);
             exit();
         }
 
+        // hapus file gambar yang terkait
+        $file_path = '/uploads/' . $book['file']; // asumsikan kolom nama file gambar adalah 'image'
+        if (file_exists($file_path)) {
+            // kode untuk menghapus file yang ada di folder uploads
+            unlink($file_path);
+        }
+
         // proses hapus data secara permanen
-        $book = $model_book->deleteById($book_id);
-        if ($book === true) {
+        $delete_success = $model_book->deleteById($book_id);
+        if ($delete_success === true) {
             $data = ['message' => 'Buku berhasil dihapus '];
             $code = 200;
         } else {
             $data = ['message' => 'Buku Gagal dihapus '];
             $code = 500;
         }
-        $this->sendJson($data, $code);
-    }
-
-
-    private function sendJson($data, $code)
-    {
         header('Content-Type: application/json');
         http_response_code($code);
         echo json_encode($data);
+        exit();
     }
 }

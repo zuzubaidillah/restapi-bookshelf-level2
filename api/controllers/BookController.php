@@ -22,7 +22,7 @@ class BookController
 
         if (isset($headers['Authorization'])) {
             $bearer = explode(' ', $headers['Authorization']);
-            $index_token = (sizeof($bearer)-1);
+            $index_token = (sizeof($bearer) - 1);
             $jwt = $bearer[$index_token] ?? null;
         }
 
@@ -169,7 +169,7 @@ class BookController
                 $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
             }
         }
-        
+
         // Validasi 'file' required
         if (!isset($_FILES['file'])) {
             $errors['file'] = 'File harus diisi.';
@@ -317,6 +317,7 @@ class BookController
         $verifikasi_token = $token_jwt->verify($jwt);
         $user_id = $verifikasi_token['user_id'];
 
+        // cara mengambil request client yang dikirim dengan type json
         $request = json_decode(file_get_contents('php://input'), true);
 
         // validasi request
@@ -400,19 +401,36 @@ class BookController
 
     public function putIsCompleteBook($book_id)
     {
+        // verifikasi token
+        $headers = getallheaders();
+        $bearer = explode(' ', $headers['Authorization']);
+        $jwt = $bearer[sizeof($bearer) - 1] ?? null;
+        // memanggil library tokenJWT
+        $token_jwt = new TokenJwt();
+        $verifikasi_token = $token_jwt->verify($jwt);
+        $user_id = $verifikasi_token['user_id'];
+
+        // mendapatkan request dari client (yang dikirim menggunakan JSON)
         $request = json_decode(file_get_contents('php://input'), true);
 
         $errors = [];
         // Validasi 'isComplete' required
         if (!isset($request['isComplete']) && empty($request['isComplete'])) {
             $errors['isComplete'] = 'komplete membaca diperlukan.';
+        } else {
+            if ($request['isComplete'] != '1' && $request['isComplete'] != '0') {
+                $errors['isComplete'] = 'Status isComplete harus 1 atau 0.';
+            }
         }
-        if ($errors) {
-            $this->sendJson([
+
+        if (count($errors) >= 1) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode([
                 "errors" => $errors,
                 "error" => "request tidak lengkap",
                 "message" => "request tidak lengkap"
-            ], 400);
+            ]);
             exit();
         }
 
@@ -428,14 +446,14 @@ class BookController
             exit();
         }
 
-        $user_id = (auth())->id;
         $isComplete = $request['isComplete'];
 
         // proses update book
         $book = $model_book->updateIsComplete($book_id, $user_id, $isComplete);
         if ($book) {
+            $message = $request['isComplete']==1 ? 'Buku telah komplete dibaca' : 'Buku diubah ke belum dibaca';
             $data = [
-                'message' => $request['isComplete'] ? 'Buku telah komplete dibaca' : 'Buku diubah ke belum dibaca',
+                'message' => $message,
                 "data" => $book
             ];
             $code = 200;
@@ -444,7 +462,10 @@ class BookController
             $code = 500;
         }
 
-        $this->sendJson($data, $code);
+        header('Content-Type: application/json');
+        http_response_code($code);
+        echo json_encode($data);
+        exit();
     }
 
     public function updateFile($book_id)

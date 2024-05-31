@@ -60,7 +60,8 @@ class Book
     public function findId($book_id)
     {
         $query = "SELECT 
-            id, title, year, author, isComplete, file, created_at, updated_at, deleted_at, creator_id, updator_id 
+            id, title, year, author, isComplete, file, created_at, 
+            updated_at, deleted_at, creator_id, updator_id 
         FROM book
         WHERE id=:id";
 
@@ -185,13 +186,16 @@ class Book
 
     public function updateIsComplete($id, $user_id, $isComplete)
     {
+        $tanggal_sekarang = date("Y-m-d H:i:s");
+
         // berhubung request isComplete required
         // harus kita berikan logika jika ada is_complete maka akan diikut sertakan update data book
-        $query = "UPDATE book SET isComplete=:isComplete, updated_at=:updated_at, updator_id=:updator_id WHERE id=:id";
+        $query = "UPDATE book 
+            SET isComplete=:isComplete, updated_at=:updated_at, updator_id=:updator_id 
+            WHERE id=:id";
         $this->db->query($query);
         $this->db->bind('id', $id);
         $this->db->bind('isComplete', $isComplete);
-        $tanggal_sekarang = date("Y-m-d H:i:s");
         $this->db->bind('updated_at', $tanggal_sekarang);
         $this->db->bind('updator_id', $user_id);
 

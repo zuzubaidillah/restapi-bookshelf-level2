@@ -206,7 +206,7 @@ class Book
 
     public function updateFile($id, $file, $user_id)
     {
-        $query = "UPDATE book SET file=:file WHERE id=:id";
+        $query = "UPDATE book SET file=:file WHERE id=:id and creator_id = :creator_id";
         $this->db->query($query);
         $this->db->bind('id', $id);
         $this->db->bind('file', $file);
@@ -215,7 +215,7 @@ class Book
         $res = $this->db->execute();
         if ($res) {
             // Mengambil data yang baru disimpan
-            $this->db->query("SELECT * FROM book WHERE id = :id and creator_id = :creator_id");
+            $this->db->query("SELECT * FROM book WHERE id = :id");
             $this->db->bind('id', $id);
             return $this->db->single();
         } else {

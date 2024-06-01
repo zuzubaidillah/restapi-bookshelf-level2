@@ -514,8 +514,10 @@ class BookController
 
         // Hapus file lama jika ada
         $oldFilePath = $find_book_id['file'];
-        if (file_exists($oldFilePath)) {
-            unlink($oldFilePath);
+        if ($oldFilePath != null) {
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
+            }
         }
 
         $target_folder = "uploads/";
@@ -548,7 +550,7 @@ class BookController
             if (move_uploaded_file($_FILES["file"]["tmp_name"], $kombinasi_target_file_name)) {
                 // proses simpan data
                 $book = new Book();
-                $result = $book->updateFile($book_id, $kombinasi_target_file_name);
+                $result = $book->updateFile($book_id, $kombinasi_target_file_name, $user_id);
                 $data = [
                     'data' => $result
                 ];
@@ -613,7 +615,7 @@ class BookController
         }
 
         // hapus file gambar yang terkait
-        $file_path = '/uploads/' . $book['file']; // asumsikan kolom nama file gambar adalah 'image'
+        $file_path = $book['file']; // asumsikan kolom nama file gambar adalah 'file'
         if (file_exists($file_path)) {
             // kode untuk menghapus file yang ada di folder uploads
             unlink($file_path);
